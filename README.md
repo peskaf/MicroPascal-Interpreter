@@ -1,3 +1,3 @@
-# empty
+# Replace this with your name
 
-empty project used as a fork origin for student repos
+Describe your project(s) here.
