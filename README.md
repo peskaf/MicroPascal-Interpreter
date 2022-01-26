@@ -11,5 +11,7 @@ Podmnožina jazyka Pascal, pro kterou bude interpreter napsán, je vymazena takt
 - binární operátory +, -, *, /, <, >, <=, >=, <>, ==, and, or, unární - a not.
 
 Verze specifikace: 1.0
+
 Autor: Filip Peška
+
 Datum: 02.11.2021
