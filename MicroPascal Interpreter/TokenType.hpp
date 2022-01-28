@@ -55,6 +55,7 @@ enum class TokenType
 	ELSE,
 	PROCEDURE,
 	FUNCTION,
+	WRITELN,
 
 	// artificial
 	END_OF_FILE
@@ -192,6 +193,9 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 		break;
 	case TokenType::FUNCTION:
 		type_string = "FUNCTION";
+		break;
+	case TokenType::WRITELN:
+		type_string = "WRITELN";
 		break;
 	case TokenType::END_OF_FILE:
 		type_string = "END_OF_FILE";
