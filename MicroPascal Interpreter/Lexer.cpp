@@ -3,9 +3,22 @@
 
 class Lexer // lexical analysis, creates Tokens
 {
-    /*
-        Manages tokens creation from input text, provides tokens further ...
-    */
+public:
+    Lexer(std::string m_text) : input(m_text) {};
+
+    std::list<Token> GetTokens()
+    {
+        while (!isAtEnd())
+        {
+            std::cout << curr_char << std::endl;
+            start_pos = curr_pos;
+            scanToken();
+        }
+        tokens.push_back(Token(TokenType::END_OF_FILE, "", nullptr, line_num));
+        return tokens;
+    }
+
+private:
     std::string input;
 
     int line_num = 1;
@@ -15,19 +28,6 @@ class Lexer // lexical analysis, creates Tokens
 
     std::list<Token> tokens;
 
-    Lexer(std::string m_text) : input(m_text) {};
-
-    std::list<Token> GetTokens()
-    {
-        while (!isAtEnd())
-        {
-            start_pos = curr_pos;
-            scanToken();
-        }
-        tokens.push_back(Token(TokenType::END_OF_FILE, "", nullptr, line_num));
-        return tokens;
-    }
-
     bool isAtEnd()
     {
         return curr_pos >= input.length();
@@ -35,11 +35,13 @@ class Lexer // lexical analysis, creates Tokens
 
     void scanToken()
     {
-        if (std::isspace(curr_char)) {
+        if (std::isspace(curr_char))
+        {
             SkipWhitespace();
         }
         
-        if (std::isdigit(curr_char)) {
+        if (std::isdigit(curr_char))
+        {
             addToken(TokenType::INTEGER, Integer());
             return;
         }
@@ -68,7 +70,7 @@ class Lexer // lexical analysis, creates Tokens
             addToken(TokenType::RIGHT_PAR);
             break;
         case '{':
-            while (!isAtEnd && curr_char != '{') // skip comment
+            while (!isAtEnd() && curr_char != '{') // skip comment
             {
                 Advance();
             }
@@ -122,16 +124,12 @@ class Lexer // lexical analysis, creates Tokens
 
     bool nextIsMatchWith(char next)
     {
-        if (isAtEnd())
+        if (isAtEnd() || input[curr_pos + 1] != next)
         {
             return false;
         }
-
-        if (!isAtEnd() && input[curr_pos + 1] == next)
-        {
-            curr_pos++;
-            return true;
-        }
+        Advance();
+        return true;
     }
 
     int Integer()
