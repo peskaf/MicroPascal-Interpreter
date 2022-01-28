@@ -17,7 +17,7 @@ public:
 
 	void Print() // for current debug
 	{
-		std::cout << type << " ";
+		std::cout << type << " " << lexeme << " " << line_num << std::endl;
 	}
 
 private:

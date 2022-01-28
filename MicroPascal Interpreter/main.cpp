@@ -6,7 +6,7 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		Lexer lex("()**::=<>{123**}123    (5");
+		Lexer lex("12 34 ;   \n := <><=< {123 *()})*");
 		std::list<Token> tokens = lex.GetTokens();
 
 		for (auto&& tok : tokens)

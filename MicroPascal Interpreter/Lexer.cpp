@@ -10,7 +10,6 @@ public:
     {
         while (!isAtEnd())
         {
-            std::cout << curr_char << std::endl;
             start_pos = curr_pos;
             scanToken();
         }
@@ -38,8 +37,9 @@ private:
         if (std::isspace(curr_char))
         {
             SkipWhitespace();
+            return;
         }
-        
+
         if (std::isdigit(curr_char))
         {
             addToken(TokenType::INTEGER, Integer());
@@ -70,7 +70,7 @@ private:
             addToken(TokenType::RIGHT_PAR);
             break;
         case '{':
-            while (!isAtEnd() && curr_char != '{') // skip comment
+            while (!isAtEnd() && curr_char != '}') // skip comment
             {
                 Advance();
             }
@@ -135,11 +135,10 @@ private:
     int Integer()
     {
         int number = curr_char - '0'; // make int out of a char
-        Advance();
-        while (curr_pos <= input.size() - 1 && std::isdigit(input[curr_pos]))
+        while (curr_pos + 1 < input.size() && std::isdigit(input[curr_pos + 1]))
         {
-            number = 10 * number + (curr_char - '0');
             Advance();
+            number = 10 * number + (curr_char - '0');
         }
         return number;
     }
@@ -151,8 +150,9 @@ private:
 
     void addToken(TokenType type, Literal lit)
     {   
-        tokens.push_back(Token(type, input.substr(start_pos, curr_pos), lit, line_num));
         Advance();
+        // std::cout << start_pos << " " << curr_pos << " " << input.substr(start_pos, curr_pos - start_pos) << std::endl;
+        tokens.push_back(Token(type, input.substr(start_pos, curr_pos - start_pos), lit, line_num));
     }
 
     void Advance()
