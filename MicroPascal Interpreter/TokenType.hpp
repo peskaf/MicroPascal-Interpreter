@@ -10,7 +10,7 @@ enum class TokenType
 	COLON,
 	DOT,
 	COMMA,
-	TIMES,
+	MUL,
 	PLUS,
 	MINUS,
 	DIV,
@@ -19,8 +19,6 @@ enum class TokenType
 	LESS,
 	LEFT_PAR,
 	RIGHT_PAR,
-	LEFT_BRACE,
-	RIGHT_BRACE,
 
 	// two chars
 	LESS_EQUAL,
@@ -32,7 +30,7 @@ enum class TokenType
 	ID,
 	STRING,
 	CHAR,
-	INT,
+	INTEGER,
 	BOOL,
 
 	// keywords
@@ -77,8 +75,8 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 	case TokenType::COMMA:
 		type_string = "COMMA";
 		break;
-	case TokenType::TIMES:
-		type_string = "TIMES";
+	case TokenType::MUL:
+		type_string = "MUL";
 		break;
 	case TokenType::PLUS:
 		type_string = "PLUS";
@@ -104,12 +102,6 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 	case TokenType::RIGHT_PAR:
 		type_string = "RIGHT_PAR";
 		break;
-	case TokenType::LEFT_BRACE:
-		type_string = "LEFT_BRACE";
-		break;
-	case TokenType::RIGHT_BRACE:
-		type_string = "RIGHT_BRACE";
-		break;
 	case TokenType::LESS_EQUAL:
 		type_string = "LESS_EQUAL";
 		break;
@@ -131,8 +123,8 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 	case TokenType::CHAR:
 		type_string = "CHAR";
 		break;
-	case TokenType::INT:
-		type_string = "INT";
+	case TokenType::INTEGER:
+		type_string = "INTEGER";
 		break;
 	case TokenType::BOOL:
 		type_string = "BOOL";

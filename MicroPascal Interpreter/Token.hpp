@@ -9,13 +9,15 @@ using Literal = std::variant<std::nullptr_t, int, bool, char, std::string>;
 
 class Token
 {
+public:
+	Token(TokenType m_type, std::string m_lexeme, Literal m_lit, int m_line_num)
+		: type(m_type), lexeme(m_lexeme), lit(m_lit), line_num(m_line_num) {}
+
+private:
 	TokenType type;
 	std::string lexeme;
 	Literal lit;
 	int line_num; // for error handling
-
-	Token(TokenType type, std::string lexeme, Literal lit, int line_num) : type(type), lexeme(lexeme), lit(lit), line_num(line_num) {}
-
 };
 
 #endif // !TOKEN_HPP
