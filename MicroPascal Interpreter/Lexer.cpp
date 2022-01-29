@@ -49,6 +49,7 @@ private:
         {"char", TokenType::CHAR_TYPE},
         {"integer", TokenType::INTEGER_TYPE},
         {"boolean", TokenType::BOOL_TYPE},
+        {"div", TokenType::DIV}
     };
 
     int line_num = 1;
