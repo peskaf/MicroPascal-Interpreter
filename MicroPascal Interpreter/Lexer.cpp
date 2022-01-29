@@ -253,7 +253,15 @@ private:
     void AddToken(TokenType type, Literal lit)
     {   
         Advance();
-        tokens.push_back(Token(type, input.substr(start_pos, curr_pos - start_pos), lit, line_num));
+        std::string lexeme = input.substr(start_pos, curr_pos - start_pos);
+        if (type == TokenType::ID)
+        {
+            // Pascal is case insensitive -> ID's lexeme gets converted to lower so we dont have to do so later (for looking up value etc.)
+            std::transform(lexeme.begin(), lexeme.end(), lexeme.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+        }
+        
+        tokens.push_back(Token(type, lexeme, lit, line_num));
     }
 
     void Advance()

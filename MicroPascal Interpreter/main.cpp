@@ -21,7 +21,7 @@ int main(int argc, char const* argv[])
 			"	 number:integer;\n"
 			"\n"
 			"beGin\n"
-			"	name := 'Salvator'; { name of someone }\n"
+			"	nAme := 'Salvator'; { name of someone }\n"
 			"	number := 1928;\n"
 			"	writeln(name);\n"
 			"	print(true, 12,		'f');\n"
