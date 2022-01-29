@@ -69,13 +69,6 @@ private:
         case ')':
             addToken(TokenType::RIGHT_PAR);
             break;
-        case '{':
-            while (!isAtEnd() && curr_char != '}') // skip comment
-            {
-                Advance();
-            }
-            Advance(); // no effect if it's end, otherwise skips comment terminator
-            break;
         case ';':
             addToken(TokenType::SEMICOLON);
             break;
@@ -115,6 +108,17 @@ private:
             {
                 addToken(TokenType::COLON);
             }
+            break;
+        case '{':
+            while (!isAtEnd() && curr_char != '}') // skip comment
+            {
+                if (curr_char == '\n')
+                {
+                    line_num++;
+                }
+                Advance();
+            }
+            Advance(); // no effect if it's EOF, otherwise skips comment terminator
             break;
         default:
             throw std::runtime_error("Unknown char."); // later change to some error call

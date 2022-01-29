@@ -6,7 +6,7 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		Lexer lex("12 34 ;   \n := <><=< {123 *()})*");
+		Lexer lex("12 34 ;		\n\n\n := <><=< {123 \n*()\n133 ahoj})*");
 		std::list<Token> tokens = lex.GetTokens();
 
 		for (auto&& tok : tokens)
@@ -19,20 +19,5 @@ int main(int argc, char const* argv[])
 		std::cout << e.what() << std::endl;
 	}
 	
-	/*
-	if (argc > 2) // wrong usage
-	{
-		std::cout << "Usage: micropascal [script]" << std::endl; // edit later
-		std::exit(64);
-	}
-	else if (argc == 2)
-	{
-		// run from file args[1]
-	}
-	else
-	{
-		// run prompt
-	}
-	*/
 	return 0;
 }
