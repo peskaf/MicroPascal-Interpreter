@@ -7,7 +7,7 @@
 #include "TokenType.hpp"
 
 
-using Literal = std::variant<std::nullptr_t, int, bool, char, std::string>;
+using Literal = std::variant<std::nullptr_t, int, bool, char, std::string>; // bool?
 
 class Token
 {

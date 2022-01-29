@@ -1,17 +1,20 @@
-#include "Token.hpp"
 #include <list>
+#include <map>
+#include <algorithm>
+
+#include "Token.hpp"
 
 class Lexer // lexical analysis, creates Tokens
 {
 public:
-    Lexer(std::string m_text) : input(m_text) {};
+    Lexer(std::string m_text) : input(m_text) {}
 
     std::list<Token> GetTokens()
     {
-        while (!isAtEnd())
+        while (!IsAtEnd())
         {
             start_pos = curr_pos;
-            scanToken();
+            ScanToken();
         }
         tokens.push_back(Token(TokenType::END_OF_FILE, "", nullptr, line_num));
         return tokens;
@@ -20,6 +23,34 @@ public:
 private:
     std::string input;
 
+    const std::map<std::string, TokenType> reserved_keywords =
+    {
+        {"program", TokenType::PROGRAM},
+        {"begin", TokenType::BEGIN},
+        {"end", TokenType::END},
+        {"var", TokenType::VAR},
+        {"true", TokenType::TRUE},
+        {"false", TokenType::FALSE},
+        {"and", TokenType::AND},
+        {"or", TokenType::OR},
+        {"not", TokenType::NOT},
+        {"for", TokenType::FOR},
+        {"to", TokenType::TO},
+        {"downto", TokenType::DOWNTO},
+        {"do", TokenType::DO},
+        {"while", TokenType::WHILE},
+        {"if", TokenType::IF},
+        {"then", TokenType::THEN},
+        {"else", TokenType::ELSE},
+        {"procedure", TokenType::PROCEDURE},
+        {"function", TokenType::FUNCTION},
+        {"writeln", TokenType::WRITELN},
+        {"string", TokenType::STRING_TYPE},
+        {"char", TokenType::CHAR_TYPE},
+        {"integer", TokenType::INTEGER_TYPE},
+        {"boolean", TokenType::BOOL_TYPE},
+    };
+
     int line_num = 1;
     size_t start_pos = 0;
     size_t curr_pos = 0;
@@ -27,12 +58,12 @@ private:
 
     std::list<Token> tokens;
 
-    bool isAtEnd()
+    bool IsAtEnd()
     {
         return curr_pos >= input.length();
     }
 
-    void scanToken()
+    void ScanToken()
     {
         if (std::isspace(curr_char))
         {
@@ -42,83 +73,84 @@ private:
 
         if (std::isdigit(curr_char))
         {
-            addToken(TokenType::INTEGER, Integer());
+            AddToken(TokenType::INTEGER_VAL, Integer());
+            return;
+        }
+
+        if (std::isalpha(curr_char))
+        {
+            Identifier();
             return;
         }
 
         switch (curr_char)
         {
         case '+':
-            addToken(TokenType::PLUS);
+            AddToken(TokenType::PLUS);
             break;
         case '-':
-            addToken(TokenType::MINUS);
+            AddToken(TokenType::MINUS);
             break;
         case '*':
-            addToken(TokenType::MUL);
+            AddToken(TokenType::MUL);
             break;
         case '.':
-            addToken(TokenType::DOT);
+            AddToken(TokenType::DOT);
             break;
         case ',':
-            addToken(TokenType::COMMA);
+            AddToken(TokenType::COMMA);
             break;
         case '(':
-            addToken(TokenType::LEFT_PAR);
+            AddToken(TokenType::LEFT_PAR);
             break;
         case ')':
-            addToken(TokenType::RIGHT_PAR);
+            AddToken(TokenType::RIGHT_PAR);
             break;
         case ';':
-            addToken(TokenType::SEMICOLON);
+            AddToken(TokenType::SEMICOLON);
             break;
         case '=':
-            addToken(TokenType::EQUAL);
+            AddToken(TokenType::EQUAL);
             break;
         case '<':
-            if (nextIsMatchWith('='))
+            if (NextIsMatchWith('='))
             {
-                addToken(TokenType::LESS_EQUAL);
+                AddToken(TokenType::LESS_EQUAL);
             }
-            else if (nextIsMatchWith('>'))
+            else if (NextIsMatchWith('>'))
             {
-                addToken(TokenType::NOT_EQUAL);
+                AddToken(TokenType::NOT_EQUAL);
             }
             else
             {
-                addToken(TokenType::LESS);
+                AddToken(TokenType::LESS);
             }
             break;
         case '>':
-            if (nextIsMatchWith('='))
+            if (NextIsMatchWith('='))
             {
-                addToken(TokenType::GREATER_EQUAL);
+                AddToken(TokenType::GREATER_EQUAL);
             }
             else
             {
-                addToken(TokenType::GREATER);
+                AddToken(TokenType::GREATER);
             }
             break;
         case ':':
-            if (nextIsMatchWith('='))
+            if (NextIsMatchWith('='))
             {
-                addToken(TokenType::ASSIGN);
+                AddToken(TokenType::ASSIGN);
             }
             else
             {
-                addToken(TokenType::COLON);
+                AddToken(TokenType::COLON);
             }
             break;
+        case '\'': // '
+            AddToken(TokenType::STRING_VAL, String());
+            break;
         case '{':
-            while (!isAtEnd() && curr_char != '}') // skip comment
-            {
-                if (curr_char == '\n')
-                {
-                    line_num++;
-                }
-                Advance();
-            }
-            Advance(); // no effect if it's EOF, otherwise skips comment terminator
+            SkipComment();
             break;
         default:
             throw std::runtime_error("Unknown char."); // later change to some error call
@@ -126,9 +158,38 @@ private:
         }
     }
 
-    bool nextIsMatchWith(char next)
+    void SkipComment()
     {
-        if (isAtEnd() || input[curr_pos + 1] != next)
+        Advance(); // go past the first {
+
+        int braces_count = 1; // +1 if see {, -1 if see } -> allows nested comments
+        while (!IsAtEnd() && braces_count != 0) // skip comment
+        {
+            if (curr_char == '\n')
+            {
+                line_num++;
+            }
+            else if (curr_char == '{')
+            {
+                braces_count++;
+            }
+            else if (curr_char == '}')
+            {
+                braces_count--;
+            }
+
+            Advance();
+        }
+
+        if (IsAtEnd() && braces_count != 0)
+        {
+            throw std::runtime_error("Unexpected end of file."); // comment is not terminated -> goes on until the EOF
+        }
+    }
+
+    bool NextIsMatchWith(char next)
+    {
+        if (IsAtEnd() || input[curr_pos + 1] != next)
         {
             return false;
         }
@@ -147,22 +208,58 @@ private:
         return number;
     }
 
-    void addToken(TokenType type)
+    void Identifier()
     {
-        addToken(type, nullptr);
+        while (curr_pos + 1 < input.size() && std::isalnum(input[curr_pos + 1]))
+        {
+            Advance();
+        }
+
+        std::string lit_value = input.substr(start_pos, curr_pos - start_pos + 1); // + 1 -> need lit_value, in AddToken it will be advanced
+        std::transform(lit_value.begin(), lit_value.end(), lit_value.begin(), // Pascal is case insensitive
+            [](unsigned char c) { return std::tolower(c); });
+
+        if (reserved_keywords.find(lit_value) != reserved_keywords.end())
+        {
+            AddToken(reserved_keywords.at(lit_value));
+            return;
+        }
+        AddToken(TokenType::ID);
     }
 
-    void addToken(TokenType type, Literal lit)
+    std::string String()
+    {
+        while (curr_pos + 1 < input.size() && input[curr_pos + 1] != '\'')
+        {
+            Advance();
+            if (curr_char == '\n')
+            {
+                throw std::runtime_error("String exceeds line."); // later to some error class call
+            }
+        }
+        if (IsAtEnd())
+        {
+            throw std::runtime_error("String not terminated."); // later to some error class call
+        }
+        Advance(); // skip second '
+        return input.substr(start_pos + 1, curr_pos - (start_pos + 1)); // cut ' chars
+    }
+
+    void AddToken(TokenType type)
+    {
+        AddToken(type, nullptr);
+    }
+
+    void AddToken(TokenType type, Literal lit)
     {   
         Advance();
-        // std::cout << start_pos << " " << curr_pos << " " << input.substr(start_pos, curr_pos - start_pos) << std::endl;
         tokens.push_back(Token(type, input.substr(start_pos, curr_pos - start_pos), lit, line_num));
     }
 
     void Advance()
     {
         curr_pos++;
-        if (!isAtEnd())
+        if (!IsAtEnd())
         {
             curr_char = input[curr_pos];
         }
@@ -170,7 +267,7 @@ private:
 
     void SkipWhitespace()
     {
-        while (!isAtEnd() && std::isspace(curr_char))
+        while (!IsAtEnd() && std::isspace(curr_char))
         {
             if (curr_char == '\n')
             {

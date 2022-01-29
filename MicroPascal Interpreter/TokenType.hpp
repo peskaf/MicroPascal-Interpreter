@@ -28,10 +28,10 @@ enum class TokenType
 
 	// literals
 	ID,
-	STRING,
-	CHAR,
-	INTEGER,
-	BOOL,
+	STRING_VAL,
+	CHAR_VAL,
+	INTEGER_VAL,
+	BOOL_VAL,
 
 	// keywords
 	PROGRAM,
@@ -54,6 +54,10 @@ enum class TokenType
 	PROCEDURE,
 	FUNCTION,
 	WRITELN,
+	STRING_TYPE,
+	CHAR_TYPE,
+	INTEGER_TYPE,
+	BOOL_TYPE,
 
 	// artificial
 	END_OF_FILE
@@ -117,16 +121,16 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 	case TokenType::ID:
 		type_string = "ID";
 		break;
-	case TokenType::STRING:
-		type_string = "STRING";
+	case TokenType::STRING_VAL:
+		type_string = "STRING_VAL";
 		break;
-	case TokenType::CHAR:
-		type_string = "CHAR";
+	case TokenType::CHAR_VAL:
+		type_string = "CHAR_VAL";
 		break;
-	case TokenType::INTEGER:
-		type_string = "INTEGER";
+	case TokenType::INTEGER_VAL:
+		type_string = "INTEGER_VAL";
 		break;
-	case TokenType::BOOL:
+	case TokenType::BOOL_VAL:
 		type_string = "BOOL";
 		break;
 	case TokenType::PROGRAM:
@@ -188,6 +192,18 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 		break;
 	case TokenType::WRITELN:
 		type_string = "WRITELN";
+		break;
+	case TokenType::STRING_TYPE:
+		type_string = "STRING_TYPE";
+		break;
+	case TokenType::CHAR_TYPE:
+		type_string = "CHAR_TYPE";
+		break;
+	case TokenType::INTEGER_TYPE:
+		type_string = "INTEGER_TYPE";
+		break;
+	case TokenType::BOOL_TYPE:
+		type_string = "BOOL_TYPE";
 		break;
 	case TokenType::END_OF_FILE:
 		type_string = "END_OF_FILE";
