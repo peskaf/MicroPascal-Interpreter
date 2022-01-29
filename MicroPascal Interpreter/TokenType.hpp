@@ -13,7 +13,6 @@ enum class TokenType
 	MUL,
 	PLUS,
 	MINUS,
-	DIV,
 	EQUAL,
 	GREATER,
 	LESS,
@@ -29,9 +28,9 @@ enum class TokenType
 	// literals
 	ID,
 	STRING_VAL,
-	CHAR_VAL,
+	CHAR_VAL, // ??
 	INTEGER_VAL,
-	BOOL_VAL,
+	BOOL_VAL, // ??
 
 	// keywords
 	PROGRAM,
@@ -58,6 +57,7 @@ enum class TokenType
 	CHAR_TYPE,
 	INTEGER_TYPE,
 	BOOL_TYPE,
+	DIV,
 
 	// artificial
 	END_OF_FILE
