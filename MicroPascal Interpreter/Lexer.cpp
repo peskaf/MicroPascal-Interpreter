@@ -1,4 +1,4 @@
-#include <list>
+#include <vector>
 #include <map>
 #include <algorithm>
 
@@ -9,7 +9,7 @@ class Lexer // lexical analysis, creates Tokens
 public:
     Lexer(std::string m_text) : input(m_text) {}
 
-    std::list<Token> GetTokens()
+    std::vector<Token> GetTokens()
     {
         while (!IsAtEnd())
         {
@@ -57,7 +57,7 @@ private:
     size_t curr_pos = 0;
     char curr_char = input[curr_pos];
 
-    std::list<Token> tokens;
+    std::vector<Token> tokens;
 
     bool IsAtEnd()
     {
@@ -154,14 +154,14 @@ private:
             SkipComment();
             break;
         default:
-            throw std::runtime_error("Unknown char."); // later change to some error call
+            throw std::runtime_error("Unknown char."); // later change to some error call mby
             break;
         }
     }
 
     void SkipComment()
     {
-        Advance(); // go past the first {
+        Advance(); // go past the first '{'
 
         int braces_count = 1; // +1 if see {, -1 if see } -> allows nested comments
         while (!IsAtEnd() && braces_count != 0) // skip comment
@@ -222,6 +222,18 @@ private:
 
         if (reserved_keywords.find(lit_value) != reserved_keywords.end())
         {
+            if (lit_value == "true")
+            {
+                AddToken(TokenType::TRUE, true);
+                return;
+            }
+            
+            if (lit_value == "false")
+            {
+                AddToken(TokenType::FALSE, false);
+                return;
+            }
+
             AddToken(reserved_keywords.at(lit_value));
             return;
         }

@@ -1,11 +1,13 @@
 #include <iostream>
 
 #include "Lexer.cpp"
+#include "Parser.cpp"
 
 int main(int argc, char const* argv[])
 {
 	try
 	{
+		/*
 		std::string input =
 			"Program test;\n"
 			"ProCeDURE print(isProcedure:boolean, y:integer, a:char)\n"
@@ -26,9 +28,15 @@ int main(int argc, char const* argv[])
 			"	writeln(name);\n"
 			"	print(true, 12,		'f');\n"
 			"enD.\n";
+		*/
+		std::string input = "1 + 1";
 
 		Lexer lex(input);
-		std::list<Token> tokens = lex.GetTokens();
+		std::vector<Token> tokens = lex.GetTokens();
+
+		Parser par(tokens);
+		Interpreter interpreter;
+		std::cout << std::get<int>(par.Parse()->Accept(interpreter)) << std::endl;
 
 		for (auto&& tok : tokens)
 		{

@@ -7,7 +7,7 @@
 #include "TokenType.hpp"
 
 
-using Literal = std::variant<std::nullptr_t, int, bool, char, std::string>; // bool?? char??
+using Literal = std::variant<std::nullptr_t, int, bool, std::string>; // value types that can occur (input or evaluation)
 
 class Token
 {
@@ -20,7 +20,6 @@ public:
 		std::cout << type << " " << lexeme << " " << line_num << std::endl;
 	}
 
-private:
 	TokenType type;
 	std::string lexeme;
 	Literal lit;

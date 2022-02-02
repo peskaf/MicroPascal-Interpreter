@@ -28,9 +28,7 @@ enum class TokenType
 	// literals
 	ID,
 	STRING_VAL,
-	CHAR_VAL, // ??
 	INTEGER_VAL,
-	BOOL_VAL, // ??
 
 	// keywords
 	PROGRAM,
@@ -124,14 +122,8 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 	case TokenType::STRING_VAL:
 		type_string = "STRING_VAL";
 		break;
-	case TokenType::CHAR_VAL:
-		type_string = "CHAR_VAL";
-		break;
 	case TokenType::INTEGER_VAL:
 		type_string = "INTEGER_VAL";
-		break;
-	case TokenType::BOOL_VAL:
-		type_string = "BOOL";
 		break;
 	case TokenType::PROGRAM:
 		type_string = "PROGRAM";
