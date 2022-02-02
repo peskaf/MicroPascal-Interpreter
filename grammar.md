@@ -14,7 +14,7 @@ parameterList -> "(" identifierList ":" type (";" identifierList ":" type)* ")";
 
 identifierList -> IDENTIFIER ("," IDENTIFIER)*;
 
-statementList -> statement (";" statement)* (";")?;
+statementList -> statement (";" statement)*;
 
 statement -> writelnStmt | procedureStmt | functionStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
 
