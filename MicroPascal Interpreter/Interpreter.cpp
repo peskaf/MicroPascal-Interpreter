@@ -14,6 +14,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 	case TokenType::MUL:
 		return std::get<int>(binExpr.left->Accept(*this)) * std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
 	case TokenType::DIV:
+		// TODO: zero division
 		return std::get<int>(binExpr.left->Accept(*this)) / std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
 	default:
 		// sem neco dat
@@ -33,6 +34,8 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 	{
 	case TokenType::MINUS:
 		return -std::get<int>(unExpr.right->Accept(*this));
+	case TokenType::PLUS:
+		return std::get<int>(unExpr.right->Accept(*this));
 	default:
 		break;
 	}

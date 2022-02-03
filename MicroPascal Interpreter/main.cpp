@@ -8,29 +8,7 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		/*
-		std::string input =
-			"Program test;\n"
-			"ProCeDURE print(isProcedure:boolean, y:integer, a:char)\n"
-			"{This procedure does something useful.}\n"
-			"vAr in:string;\n"
-			"begin\n"
-			"	for i :=1 to 11 do\n"
-			"		begin\n"
-			"			writeln(i);\n"
-			"		end;\n"
-			"end;\n"
-			"Var name:string;\n"
-			"	 number:integer;\n"
-			"\n"
-			"beGin\n"
-			"	nAme := 'Salvator'; { name of someone }\n"
-			"	number := 1928;\n"
-			"	writeln(name);\n"
-			"	print(true, 12,		'f');\n"
-			"enD.\n";
-		*/
-		std::string input = "1 + 1";
+		std::string input = "1 + 1 + ( 5 - 9 ) div +4 * 7 - 8 * ( 7 - 9 div 3) * -2";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
