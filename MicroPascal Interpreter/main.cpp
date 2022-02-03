@@ -8,14 +8,14 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input = "1 + 1 + ( 5 - 9 ) div +4 * 7 - 8 * ( 7 - 9 div 3) * -2";
+		std::string input = "'hello' + 'ggg'";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
 
 		Parser par(tokens);
 		Interpreter interpreter;
-		std::cout << std::get<int>(par.Parse()->Accept(interpreter)) << std::endl;
+		std::cout << std::get<std::string>(par.Parse()->Accept(interpreter)) << std::endl;
 
 		for (auto&& tok : tokens)
 		{

@@ -5,27 +5,52 @@
 
 Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
+	Literal left_value = binExpr.left->Accept(*this);
+	Literal right_value = binExpr.right->Accept(*this);
+
 	switch (binExpr.op.type)
 	{
 	case TokenType::PLUS:
-		return std::get<int>(binExpr.left->Accept(*this)) + std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
+		if (left_value.index() == 1 && right_value.index() == 1) // 1 .. int, 2 .. bool, 3 .. string
+		{
+			return std::get<int>(left_value) + std::get<int>(right_value);
+		}
+		if (left_value.index() == 3 && right_value.index() == 3)
+		{
+			return std::get<std::string>(left_value) + std::get<std::string>(right_value);
+		}
+		break;
 	case TokenType::MINUS:
-		return std::get<int>(binExpr.left->Accept(*this)) - std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
+		if (left_value.index() == 1 && right_value.index() == 1)
+		{
+			return std::get<int>(left_value) - std::get<int>(right_value);
+		}
+		break;
 	case TokenType::MUL:
-		return std::get<int>(binExpr.left->Accept(*this)) * std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
+		if (left_value.index() == 1 && right_value.index() == 1)
+		{
+			return std::get<int>(left_value) * std::get<int>(right_value);
+		}
+		break;
 	case TokenType::DIV:
-		// TODO: zero division
-		return std::get<int>(binExpr.left->Accept(*this)) / std::get<int>(binExpr.right->Accept(*this)); // for int only, assumes no error
+		if (left_value.index() == 1 && right_value.index() == 1)
+		{
+			if (std::get<int>(right_value) == 0)
+			{
+				throw std::runtime_error("Division by zero.");
+			}
+			return std::get<int>(left_value) / std::get<int>(right_value);
+		}
+		break;
 	default:
-		// sem neco dat
+		throw std::runtime_error("Incompatible types or invalid operator.");
 		break;
 	}
-	throw std::runtime_error("Some error.");
 }
 
 Literal Interpreter::Visit(LiteralExpr& litExpr)
 {
-	return std::get<int>(litExpr.value);
+	return litExpr.value;
 }
 
 Literal Interpreter::Visit(UnaryExpr& unExpr)
