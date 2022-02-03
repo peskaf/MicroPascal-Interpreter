@@ -8,14 +8,14 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input = "'hello' + 'ggg'";
+		std::string input = "'a' = 'a'";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
 
 		Parser par(tokens);
 		Interpreter interpreter;
-		std::cout << std::get<std::string>(par.Parse()->Accept(interpreter)) << std::endl;
+		std::cout << std::get<bool>(par.Parse()->Accept(interpreter)) << std::endl;
 
 		for (auto&& tok : tokens)
 		{

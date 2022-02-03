@@ -7,7 +7,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
 	Literal left_value = binExpr.left->Accept(*this);
 	Literal right_value = binExpr.right->Accept(*this);
-
+	std::cout << left_value.index() << " " << right_value.index() << std::endl;
 	switch (binExpr.op.type)
 	{
 	case TokenType::PLUS:
@@ -40,6 +40,42 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 				throw std::runtime_error("Division by zero.");
 			}
 			return std::get<int>(left_value) / std::get<int>(right_value);
+		}
+		break;
+	case TokenType::EQUAL:
+		if (left_value.index() == right_value.index()) // same types only
+		{
+			return left_value == right_value;
+		}
+		break;
+	case TokenType::NOT_EQUAL:
+		if (left_value.index() == right_value.index()) // same types only
+		{
+			return left_value != right_value;
+		}
+		break;
+	case TokenType::GREATER_EQUAL:
+		if (left_value.index() == 1 && right_value.index() == 1) // only ints
+		{
+			return std::get<int>(left_value) >= std::get<int>(right_value);
+		}
+		break;
+	case TokenType::LESS_EQUAL:
+		if (left_value.index() == 1 && right_value.index() == 1) // only ints
+		{
+			return std::get<int>(left_value) <= std::get<int>(right_value);
+		}
+		break;
+	case TokenType::GREATER:
+		if (left_value.index() == 1 && right_value.index() == 1) // only ints
+		{
+			return std::get<int>(left_value) > std::get<int>(right_value);
+		}
+		break;
+	case TokenType::LESS:
+		if (left_value.index() == 1 && right_value.index() == 1) // only ints
+		{
+			return std::get<int>(left_value) < std::get<int>(right_value);
 		}
 		break;
 	default:
