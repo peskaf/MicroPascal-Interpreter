@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "Lexer.cpp"
-#include "Parser.cpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
+#include "Interpreter.hpp"
 
 int main(int argc, char const* argv[])
 {

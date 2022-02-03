@@ -148,11 +148,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Expr.cpp" />
+    <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Expr.hpp" />
+    <ClInclude Include="Interpreter.hpp" />
+    <ClInclude Include="Lexer.hpp" />
+    <ClInclude Include="Parser.hpp" />
     <ClInclude Include="Token.hpp" />
     <ClInclude Include="TokenType.hpp" />
   </ItemGroup>
