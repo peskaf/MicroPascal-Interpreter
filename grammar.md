@@ -10,15 +10,15 @@ funcDecl -> "function" IDENTIFIER parameterList? ":" type ";" declaration* compo
 
 procDecl -> "procedure" IDENTIFIER parameterList? ";" declaration* compoundStmt;
 
-parameterList -> "(" identifierList ":" type (";" identifierList ":" type)* ")";
+parameterList -> "(" (identifierList ":" type (";" identifierList ":" type)*)? ")";
 
 identifierList -> IDENTIFIER ("," IDENTIFIER)*;
 
 statementList -> statement (";" statement)*;
 
-statement -> writelnStmt | procedureStmt | functionStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
+statement -> writelnStmt | procedureStmt | functionExpr | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
 
-functionStmt -> IDENTIFIER ("(" exprList ")")?;
+functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
 procedureStmt -> IDENTIFIER ("(" exprList ")")?;
 
@@ -42,8 +42,8 @@ simpleExpr -> term (("+" | "-" | "or") term)*;
 
 term -> factor (("*" | "div" | "and") factor)*;
 
-factor -> ("+" | "-" | "not") factor | functionStmt | INTEGER | "(" expression ")" | "true" | "false" | STRING | CHAR;
+factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | CHAR;
 
-nothing -> ;
+nothing -> ε;
 
 type -> "integer" | "string" | "boolean" | "char";
