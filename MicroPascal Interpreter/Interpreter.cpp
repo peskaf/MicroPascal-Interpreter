@@ -1,87 +1,61 @@
 #include <variant>
 
 #include "Interpreter.hpp"
-
+#include "Error.hpp"
 
 Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
 	Literal left_value = binExpr.left->Accept(*this);
 	Literal right_value = binExpr.right->Accept(*this);
-	std::cout << left_value.index() << " " << right_value.index() << std::endl;
-	switch (binExpr.op.type)
+
+	if (IsInt(left_value) && IsInt(right_value))
 	{
-	case TokenType::PLUS:
-		if (left_value.index() == 1 && right_value.index() == 1) // 1 .. int, 2 .. bool, 3 .. string
+		switch (binExpr.op.type)
 		{
+		case TokenType::PLUS:
 			return std::get<int>(left_value) + std::get<int>(right_value);
-		}
-		if (left_value.index() == 3 && right_value.index() == 3)
-		{
-			return std::get<std::string>(left_value) + std::get<std::string>(right_value);
-		}
-		break;
-	case TokenType::MINUS:
-		if (left_value.index() == 1 && right_value.index() == 1)
-		{
+		case TokenType::MINUS:
 			return std::get<int>(left_value) - std::get<int>(right_value);
-		}
-		break;
-	case TokenType::MUL:
-		if (left_value.index() == 1 && right_value.index() == 1)
-		{
+		case TokenType::MUL:
 			return std::get<int>(left_value) * std::get<int>(right_value);
-		}
-		break;
-	case TokenType::DIV:
-		if (left_value.index() == 1 && right_value.index() == 1)
-		{
+		case TokenType::DIV:
 			if (std::get<int>(right_value) == 0)
 			{
-				throw std::runtime_error("Division by zero.");
+				Error::ThrowError(binExpr.op.line_num,"division by zero.");
 			}
 			return std::get<int>(left_value) / std::get<int>(right_value);
-		}
-		break;
-	case TokenType::EQUAL:
-		if (left_value.index() == right_value.index()) // same types only
-		{
-			return left_value == right_value;
-		}
-		break;
-	case TokenType::NOT_EQUAL:
-		if (left_value.index() == right_value.index()) // same types only
-		{
-			return left_value != right_value;
-		}
-		break;
-	case TokenType::GREATER_EQUAL:
-		if (left_value.index() == 1 && right_value.index() == 1) // only ints
-		{
+		case TokenType::GREATER_EQUAL:
 			return std::get<int>(left_value) >= std::get<int>(right_value);
-		}
-		break;
-	case TokenType::LESS_EQUAL:
-		if (left_value.index() == 1 && right_value.index() == 1) // only ints
-		{
-			return std::get<int>(left_value) <= std::get<int>(right_value);
-		}
-		break;
-	case TokenType::GREATER:
-		if (left_value.index() == 1 && right_value.index() == 1) // only ints
-		{
+		case TokenType::GREATER:
 			return std::get<int>(left_value) > std::get<int>(right_value);
-		}
-		break;
-	case TokenType::LESS:
-		if (left_value.index() == 1 && right_value.index() == 1) // only ints
-		{
+		case TokenType::LESS_EQUAL:
+			return std::get<int>(left_value) <= std::get<int>(right_value);
+		case TokenType::LESS:
 			return std::get<int>(left_value) < std::get<int>(right_value);
+		default:
+			break;
 		}
-		break;
-	default:
-		throw std::runtime_error("Incompatible types or invalid operator.");
-		break;
 	}
+
+	if (IsString(left_value) && IsString(right_value) && binExpr.op.type == TokenType::PLUS) // string concat on + op
+	{
+		return std::get<std::string>(left_value) + std::get<std::string>(right_value);
+	}
+
+	if (left_value.index() == right_value.index()) // comparison only for same types
+	{
+		switch (binExpr.op.type)
+		{
+		case TokenType::EQUAL:
+			return left_value == right_value;
+		case TokenType::NOT_EQUAL:
+			return left_value != right_value;
+		default:
+			break;
+		}
+	}
+
+	Error::ThrowError(binExpr.op.line_num, "types incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(LiteralExpr& litExpr)
@@ -91,19 +65,66 @@ Literal Interpreter::Visit(LiteralExpr& litExpr)
 
 Literal Interpreter::Visit(UnaryExpr& unExpr)
 {
-	switch (unExpr.op.type)
+	Literal right_value = unExpr.right->Accept(*this);
+
+	if (IsInt(right_value))
 	{
-	case TokenType::MINUS:
-		return -std::get<int>(unExpr.right->Accept(*this));
-	case TokenType::PLUS:
-		return std::get<int>(unExpr.right->Accept(*this));
-	default:
-		break;
+		switch (unExpr.op.type)
+		{
+		case TokenType::MINUS:
+			return -std::get<int>(unExpr.right->Accept(*this));
+		case TokenType::PLUS:
+			return std::get<int>(unExpr.right->Accept(*this));
+		default:
+			break;
+		}
 	}
-	throw std::runtime_error("Some error.");
+
+	if (IsBool(right_value) && unExpr.op.type == TokenType::NOT)
+	{
+		return !std::get<bool>(unExpr.right->Accept(*this));
+	}
+	
+	Error::ThrowError(unExpr.op.line_num, "type incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(GroupingExpr& grExpr)
 {
 	return grExpr.expr->Accept(*this);
+}
+
+// neni finalni!!!
+void Interpreter::Interpret(std::unique_ptr<Expr> expr)
+{
+	Literal result = expr->Accept(*this);
+	if (IsInt(result))
+	{
+		std::cout << std::get<int>(result) << std::endl;
+		return;
+	}
+	else if (IsString(result))
+	{
+		std::cout << std::get<std::string>(result) << std::endl;
+		return;
+	}
+	else if (IsBool(result))
+	{
+		std::cout << (std::get<bool>(result) ? "true" : "false") << std::endl;
+	}
+}
+
+// 1 .. int, 2 .. bool, 3 .. string
+bool Interpreter::IsInt(Literal& lit)
+{
+	return lit.index() == 1;
+}
+
+bool Interpreter::IsBool(Literal& lit)
+{
+	return lit.index() == 2;
+}
+
+bool Interpreter::IsString(Literal& lit)
+{
+	return lit.index() == 3;
 }

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "Lexer.hpp"
+#include "Error.hpp"
 
 
 Lexer::Lexer(std::string m_text) : input(m_text) {}
@@ -111,7 +112,7 @@ void Lexer::ScanToken()
         SkipComment();
         break;
     default:
-        throw std::runtime_error("Unknown char."); // later change to some error call mby
+        Error::ThrowError(line_num, "illegal character.");
         break;
     }
 }
@@ -141,7 +142,7 @@ void Lexer::SkipComment()
 
     if (IsAtEnd() && braces_count != 0)
     {
-        throw std::runtime_error("Unexpected end of file."); // comment is not terminated -> goes on until the EOF
+        Error::ThrowError(line_num, "unexpected EOF."); // comment is not terminated -> goes on until the EOF
     }
 }
 
@@ -204,12 +205,12 @@ std::string Lexer::String()
         Advance();
         if (curr_char == '\n')
         {
-            throw std::runtime_error("String exceeds line."); // later to some error class call
+            Error::ThrowError(line_num, "string exceeds line.");
         }
     }
     if (IsAtEnd())
     {
-        throw std::runtime_error("String not terminated."); // later to some error class call
+        Error::ThrowError(line_num, "string is not terminated.");
     }
     Advance(); // skip second '
     return input.substr(start_pos + 1, curr_pos - (start_pos + 1)); // cut ' chars

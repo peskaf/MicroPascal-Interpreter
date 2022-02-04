@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Error.hpp"
 
 Parser::Parser(std::vector<Token>& m_tokens) : tokens(m_tokens) {};
 
@@ -50,6 +51,15 @@ bool Parser::NextMatchWith(std::vector<TokenType> token_types)
         }
     }
     return false;
+}
+
+void Parser::Eat(TokenType expected_type, std::string error_message)
+{
+    if (Check(expected_type))
+    {
+        Advance();
+    }
+    Error::ThrowError(GetCurrTok().line_num, error_message);
 }
 
 // Expr -> SimpleExpr ((">=" | "<=" | "<>" | "=" | ">" | "<") SimpleExpr)?
@@ -142,14 +152,9 @@ std::unique_ptr<Expr> Parser::Factor()
     if (NextMatchWith(std::vector<TokenType>{TokenType::LEFT_PAR}))
     {
         std::unique_ptr<Expr> expr = Expression();
-        if (NextMatchWith(std::vector<TokenType>{TokenType::RIGHT_PAR}))
-        {
-            return std::make_unique<GroupingExpr>(std::move(expr));
-        }
-        else
-        {
-            throw std::runtime_error("Expected ')' after expression.");
-        }
+        Eat(TokenType::RIGHT_PAR, "')' expected after expression.");
+        return std::make_unique<GroupingExpr>(std::move(expr));
     }
-    throw std::runtime_error("Some error.");
+
+    Error::ThrowError(GetCurrTok().line_num, "expression expected.");
 }

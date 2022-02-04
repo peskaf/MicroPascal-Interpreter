@@ -8,14 +8,15 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input = "'a' = 'a'";
+		std::string input = "55 div 0";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
 
 		Parser par(tokens);
 		Interpreter interpreter;
-		std::cout << std::get<bool>(par.Parse()->Accept(interpreter)) << std::endl;
+
+		interpreter.Interpret(par.Parse());
 
 		for (auto&& tok : tokens)
 		{
