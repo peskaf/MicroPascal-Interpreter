@@ -156,6 +156,40 @@ void Interpreter::Visit(AssignmentStmt& assignmentStmt)
 	env.Assign(assignmentStmt.token, assignmentStmt.value->Accept(*this));
 }
 
+void Interpreter::Visit(IfStmt& ifStmt)
+{
+	Literal condition_value = ifStmt.condition->Accept(*this);
+
+	if (IsBool(condition_value))
+	{
+		if (std::get<bool>(condition_value))
+		{
+			ifStmt.then_branch->Accept(*this);
+		}
+		else if (ifStmt.else_branch.has_value())
+		{
+			ifStmt.else_branch.value()->Accept(*this);
+		}
+		return; 
+	}
+	Error::ThrowError(ifStmt.token.line_num, "expected boolean value.");
+}
+
+void Interpreter::Visit(WhileStmt& whileStmt)
+{
+	Literal condition_value = whileStmt.condition->Accept(*this);
+
+	if (IsBool(condition_value))
+	{
+		while (std::get<bool>(whileStmt.condition->Accept(*this))) // need to Accept visitor like this over and over because of environment change
+		{
+			whileStmt.body->Accept(*this);
+		}
+		return;
+	}
+	Error::ThrowError(whileStmt.token.line_num, "expected boolean value.");
+}
+
 void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
 {
 	stmt->Accept(*this);

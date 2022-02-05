@@ -10,12 +10,15 @@ int main(int argc, char const* argv[])
 	{
 		std::string input =
 			"program test; \n"
-			"var a:integer;\n"
+			"var a,b:integer;\n"
 			"begin		 \n"
 			"writeln(a);\n"
 			"a := 45 * 9 + a - 2 div 3;\n"
 			"writeln(a);\n"
 			"a := a - 404;\n"
+			"if not true then writeln('then') else writeln('else');\n"
+			"b := 6;\n"
+			"while b > 3 do begin b := b - 1; writeln(b) end;\n"
 			"writeln(a);\n"
 			"end.\n";
 

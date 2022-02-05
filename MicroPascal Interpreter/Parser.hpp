@@ -58,6 +58,10 @@ private:
 
     std::unique_ptr<Stmt> AssignmentStatement();
 
+    std::unique_ptr<Stmt> IfStatement();
+
+    std::unique_ptr<Stmt> WhileStatement();
+
     std::vector<Token> tokens;
     int curr_tok_num = 0;
 };

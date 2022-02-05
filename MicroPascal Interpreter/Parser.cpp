@@ -45,9 +45,38 @@ std::unique_ptr<Stmt> Parser::Statement()
         return CompoundStatement();
     case TokenType::ID:
         return AssignmentStatement();
+    case TokenType::IF:
+        return IfStatement();
+    case TokenType::WHILE:
+        return WhileStatement();
     default:
         return EmptyStatement();
     }  
+}
+
+std::unique_ptr<Stmt> Parser::IfStatement()
+{
+    Token if_tok = Eat(TokenType::IF, "'if' expected.");
+    std::unique_ptr<Expr> condition = Expression();
+    Eat(TokenType::THEN, "'then' expected.");
+    std::unique_ptr<Stmt> then_branch = Statement();
+    if (GetCurrTok().type == TokenType::ELSE)
+    {
+        Eat(TokenType::ELSE, "'else' expected.");
+        std::unique_ptr<Stmt> else_branch = Statement();
+        return std::make_unique<IfStmt>(if_tok, std::move(condition), std::move(then_branch), std::move(else_branch));
+    }
+    return std::make_unique<IfStmt>(if_tok, std::move(condition), std::move(then_branch), std::nullopt);
+}
+
+std::unique_ptr<Stmt> Parser::WhileStatement()
+{
+    Token while_tok = Eat(TokenType::WHILE, "'while' expected.");
+    std::unique_ptr<Expr> condition = Expression();
+    Eat(TokenType::DO, "'do' expected.");
+    std::unique_ptr<Stmt> body = Statement();
+
+    return std::make_unique<WhileStmt>(while_tok, std::move(condition), std::move(body));
 }
 
 std::unique_ptr<Stmt> Parser::EmptyStatement()

@@ -14,6 +14,9 @@ class ProgramStmt;
 class EmptyStmt;
 class VarDeclStmt;
 class AssignmentStmt;
+class IfStmt;
+class WhileStmt;
+//class ForStmt;
 
 class VisitorStmt
 {
@@ -24,6 +27,9 @@ public:
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
 	virtual void Visit(AssignmentStmt& varDeclStmt) = 0;
+	virtual void Visit(IfStmt& varDeclStmt) = 0;
+	virtual void Visit(WhileStmt& varDeclStmt) = 0;
+	//virtual void Visit(ForStmt& varDeclStmt) = 0;
 };
 
 class Stmt
@@ -92,6 +98,31 @@ public:
 
 	Token token;
 	std::unique_ptr<Expr> value;
+};
+
+class IfStmt : public Stmt
+{
+public:
+	IfStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_then_branch, std::optional<std::unique_ptr<Stmt>> m_else_branch);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	Token token;
+	std::unique_ptr<Expr> condition;
+	std::unique_ptr<Stmt> then_branch;
+	std::optional<std::unique_ptr<Stmt>> else_branch;
+};
+
+class WhileStmt : public Stmt
+{
+public:
+	WhileStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_body);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	Token token;
+	std::unique_ptr<Expr> condition;
+	std::unique_ptr<Stmt> body;
 };
 
 

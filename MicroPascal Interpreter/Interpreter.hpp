@@ -36,6 +36,10 @@ private:
 
 	void Visit(AssignmentStmt& assignmentStmt) override;
 
+	void Visit(IfStmt& ifStmt) override;
+
+	void Visit(WhileStmt& whileStmt) override;
+
 	bool IsInt(Literal& lit);
 
 	bool IsString(Literal& lit);

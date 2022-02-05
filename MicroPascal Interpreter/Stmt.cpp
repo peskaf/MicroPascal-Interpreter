@@ -41,3 +41,17 @@ void AssignmentStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }
+
+IfStmt::IfStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_then_branch, std::optional<std::unique_ptr<Stmt>> m_else_branch) : token(m_token), condition(std::move(m_condition)), then_branch(std::move(m_then_branch)), else_branch(std::move(m_else_branch)) {};
+
+void IfStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}
+
+WhileStmt::WhileStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_body) : token(m_token), condition(std::move(m_condition)), body(std::move(m_body)) {};
+
+void WhileStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}
