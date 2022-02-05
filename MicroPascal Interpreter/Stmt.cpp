@@ -42,16 +42,26 @@ void AssignmentStmt::Accept(VisitorStmt& visitor)
 	return visitor.Visit(*this);
 }
 
-IfStmt::IfStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_then_branch, std::optional<std::unique_ptr<Stmt>> m_else_branch) : token(m_token), condition(std::move(m_condition)), then_branch(std::move(m_then_branch)), else_branch(std::move(m_else_branch)) {};
+IfStmt::IfStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_then_branch, std::optional<std::unique_ptr<Stmt>> m_else_branch) :
+	token(m_token), condition(std::move(m_condition)), then_branch(std::move(m_then_branch)), else_branch(std::move(m_else_branch)) {};
 
 void IfStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }
 
-WhileStmt::WhileStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_body) : token(m_token), condition(std::move(m_condition)), body(std::move(m_body)) {};
+WhileStmt::WhileStmt(Token m_token, std::unique_ptr<Expr> m_condition, std::unique_ptr<Stmt> m_body) :
+	token(m_token), condition(std::move(m_condition)), body(std::move(m_body)) {};
 
 void WhileStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}
+
+ForStmt::ForStmt(Token m_for_token, bool m_increment, Token m_id_token, std::unique_ptr<Stmt> m_assignment, std::unique_ptr<Expr> m_expression, std::unique_ptr<Stmt> m_body) :
+	for_token(m_for_token), increment(m_increment), id_token(m_id_token), assignment(std::move(m_assignment)), expression(std::move(m_expression)), body(std::move(m_body)) {}
+
+void ForStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }

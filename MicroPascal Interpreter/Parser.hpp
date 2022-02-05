@@ -62,6 +62,8 @@ private:
 
     std::unique_ptr<Stmt> WhileStatement();
 
+    std::unique_ptr<Stmt> ForStatement();
+
     std::vector<Token> tokens;
     int curr_tok_num = 0;
 };

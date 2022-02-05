@@ -40,6 +40,8 @@ private:
 
 	void Visit(WhileStmt& whileStmt) override;
 
+	void Visit(ForStmt& whileStmt) override;
+
 	bool IsInt(Literal& lit);
 
 	bool IsString(Literal& lit);

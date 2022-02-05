@@ -16,7 +16,7 @@ class VarDeclStmt;
 class AssignmentStmt;
 class IfStmt;
 class WhileStmt;
-//class ForStmt;
+class ForStmt;
 
 class VisitorStmt
 {
@@ -29,7 +29,7 @@ public:
 	virtual void Visit(AssignmentStmt& varDeclStmt) = 0;
 	virtual void Visit(IfStmt& varDeclStmt) = 0;
 	virtual void Visit(WhileStmt& varDeclStmt) = 0;
-	//virtual void Visit(ForStmt& varDeclStmt) = 0;
+	virtual void Visit(ForStmt& varDeclStmt) = 0;
 };
 
 class Stmt
@@ -122,6 +122,21 @@ public:
 
 	Token token;
 	std::unique_ptr<Expr> condition;
+	std::unique_ptr<Stmt> body;
+};
+
+class ForStmt : public Stmt
+{
+public:
+	ForStmt(Token m_for_token, bool m_increment, Token m_id_token, std::unique_ptr<Stmt> m_assignment, std::unique_ptr<Expr> m_expression, std::unique_ptr<Stmt> m_body);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	Token for_token;
+	bool increment;
+	Token id_token;
+	std::unique_ptr<Stmt> assignment;
+	std::unique_ptr<Expr> expression;
 	std::unique_ptr<Stmt> body;
 };
 

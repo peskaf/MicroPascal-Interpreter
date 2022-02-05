@@ -49,6 +49,8 @@ std::unique_ptr<Stmt> Parser::Statement()
         return IfStatement();
     case TokenType::WHILE:
         return WhileStatement();
+    case TokenType::FOR:
+        return ForStatement();
     default:
         return EmptyStatement();
     }  
@@ -78,6 +80,40 @@ std::unique_ptr<Stmt> Parser::WhileStatement()
 
     return std::make_unique<WhileStmt>(while_tok, std::move(condition), std::move(body));
 }
+
+std::unique_ptr<Stmt> Parser::ForStatement()
+{
+    Token for_tok = Eat(TokenType::FOR, "'for' expected.");
+    if (GetCurrTok().type != TokenType::ID)
+    {
+        Error::ThrowError(GetCurrTok().line_num, "identifier expected.");
+    }
+
+    Token id_tok = GetCurrTok();
+    std::unique_ptr<Stmt> assignment = AssignmentStatement();
+
+    bool increment;
+    if (GetCurrTok().type == TokenType::TO)
+    {
+        increment = true;
+    }
+    else if (GetCurrTok().type == TokenType::DOWNTO)
+    {
+        increment = false;
+    }
+    else
+    {
+        Error::ThrowError(GetCurrTok().line_num, "'to' or 'downto' expected.");
+    }
+    Advance();
+
+    std::unique_ptr<Expr> expression = Expression();
+    Eat(TokenType::DO, "'do' expected.");
+    std::unique_ptr<Stmt> body = Statement();
+
+    return std::make_unique<ForStmt>(for_tok, increment, id_tok, std::move(assignment), std::move(expression), std::move(body));
+}
+
 
 std::unique_ptr<Stmt> Parser::EmptyStatement()
 {

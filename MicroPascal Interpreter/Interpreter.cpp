@@ -190,6 +190,39 @@ void Interpreter::Visit(WhileStmt& whileStmt)
 	Error::ThrowError(whileStmt.token.line_num, "expected boolean value.");
 }
 
+void Interpreter::Visit(ForStmt& forStmt)
+{
+	// note: according to Free Pascal Compiler version 3.0.2, expression_value is evaluated BEFORE initial value is assigned
+	Literal expression_value = forStmt.expression->Accept(*this); // value that we count to/downto
+
+	forStmt.assignment->Accept(*this); // assign init value of iterator variable
+
+	Literal initial_value = env.Get(forStmt.id_token);
+
+	if (IsInt(expression_value) && IsInt(initial_value))
+	{
+		if (forStmt.increment)
+		{
+			while (std::get<int>(env.Get(forStmt.id_token)) <= std::get<int>(expression_value))
+			{
+				forStmt.body->Accept(*this);
+				env.Assign(forStmt.id_token, std::get<int>(env.Get(forStmt.id_token)) + 1);
+			}
+			return;
+		}
+		else // decrement
+		{
+			while (std::get<int>(env.Get(forStmt.id_token)) >= std::get<int>(expression_value))
+			{
+				forStmt.body->Accept(*this);
+				env.Assign(forStmt.id_token, std::get<int>(env.Get(forStmt.id_token)) - 1);
+			}
+			return;
+		}
+	}
+	Error::ThrowError(forStmt.for_token.line_num, "expected integer value.");
+}
+
 void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
 {
 	stmt->Accept(*this);
