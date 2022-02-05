@@ -50,6 +50,8 @@ private:
 
     std::unique_ptr<Stmt> Program();
 
+    std::unique_ptr<Stmt> EmptyStatement();
+
     std::vector<Token> tokens;
     int curr_tok_num = 0;
 };

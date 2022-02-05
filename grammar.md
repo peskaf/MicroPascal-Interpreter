@@ -16,7 +16,7 @@ identifierList -> IDENTIFIER ("," IDENTIFIER)*;
 
 statementList -> statement (";" statement)*;
 
-statement -> writelnStmt | procedureStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
+statement -> writelnStmt | procedureStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | emptyStmt;
 
 functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
@@ -44,6 +44,6 @@ term -> factor (("*" | "div" | "and") factor)*;
 
 factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | CHAR | IDENTIFIER;
 
-nothing -> ε;
+emptyStmt -> ε;
 
 type -> "integer" | "string" | "boolean" | "char";
