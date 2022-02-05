@@ -32,3 +32,10 @@ Literal GroupingExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 };
+
+VariableExpr::VariableExpr(Token m_token) : token(m_token) {};
+
+Literal VariableExpr::Accept(VisitorExpr& visitor)
+{
+	return visitor.Visit(*this);
+}

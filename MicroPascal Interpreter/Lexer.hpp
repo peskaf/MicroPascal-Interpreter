@@ -63,7 +63,6 @@ private:
         {"function", TokenType::FUNCTION},
         {"writeln", TokenType::WRITELN},
         {"string", TokenType::STRING_TYPE},
-        {"char", TokenType::CHAR_TYPE},
         {"integer", TokenType::INTEGER_TYPE},
         {"boolean", TokenType::BOOL_TYPE},
         {"div", TokenType::DIV}

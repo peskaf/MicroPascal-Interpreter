@@ -42,7 +42,7 @@ simpleExpr -> term (("+" | "-" | "or") term)*;
 
 term -> factor (("*" | "div" | "and") factor)*;
 
-factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | CHAR | IDENTIFIER;
+factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | IDENTIFIER;
 
 emptyStmt -> ε;
 

@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Environment.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="Expr.cpp" />
     <ClCompile Include="Interpreter.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Stmt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Environment.hpp" />
     <ClInclude Include="Error.hpp" />
     <ClInclude Include="Expr.hpp" />
     <ClInclude Include="Interpreter.hpp" />

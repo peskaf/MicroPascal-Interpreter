@@ -9,6 +9,7 @@ class BinaryExpr;
 class UnaryExpr;
 class LiteralExpr;
 class GroupingExpr;
+class VariableExpr;
 
 class VisitorExpr
 {
@@ -17,6 +18,7 @@ public:
 	virtual Literal Visit(UnaryExpr& unExpr) = 0;
 	virtual Literal Visit(LiteralExpr& litExpr) = 0;
 	virtual Literal Visit(GroupingExpr& grExpr) = 0;
+	virtual Literal Visit(VariableExpr& varExpr) = 0;
 };
 
 class Expr
@@ -67,6 +69,16 @@ public:
 	Literal Accept(VisitorExpr& visitor) override;
 
 	std::unique_ptr<Expr> expr;
+};
+
+class VariableExpr : public Expr
+{
+public:
+	VariableExpr(Token m_token);
+
+	Literal Accept(VisitorExpr& visitor) override;
+
+	Token token;
 };
 
 #endif // !EXPR_HPP

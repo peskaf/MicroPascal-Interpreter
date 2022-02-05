@@ -10,13 +10,21 @@ std::unique_ptr<Stmt> Parser::Parse()
 
 std::unique_ptr<Stmt> Parser::Program()
 {
+    // header
     Eat(TokenType::PROGRAM, "'program' expected.");
     
-    Token id = Eat(TokenType::ID, "identifier expected.");
+    std::string id = Eat(TokenType::ID, "identifier expected.").lexeme;
 
     Eat(TokenType::SEMICOLON, "';' expected.");
-    // TODO: declarations
 
+    // declarations
+    std::vector<std::unique_ptr<Stmt>> decl_stmts;
+    while (GetCurrTok().type == TokenType::VAR || GetCurrTok().type == TokenType::PROCEDURE || GetCurrTok().type == TokenType::FUNCTION)
+    {
+        decl_stmts.push_back(Declaration());
+    }
+    
+    // comp. stmt
     std::unique_ptr<Stmt> comp_stmt = CompoundStatement();
     Eat(TokenType::DOT, "'.' expected.");
 
@@ -24,7 +32,7 @@ std::unique_ptr<Stmt> Parser::Program()
     {
         Error::ThrowError(GetCurrTok().line_num, "EOF expected.");
     }
-    return std::make_unique<ProgramStmt>(id, std::move(comp_stmt));
+    return std::make_unique<ProgramStmt>(id, std::move(comp_stmt), std::move(decl_stmts));
 }
 
 std::unique_ptr<Stmt> Parser::Statement()
@@ -61,6 +69,74 @@ std::vector<std::unique_ptr<Stmt>> Parser::StatementList()
         statement_list.push_back(Statement());
     }
     return statement_list;
+}
+
+std::unique_ptr<Stmt> Parser::Declaration()
+{
+    switch(GetCurrTok().type)
+    {
+    case TokenType::VAR:
+        return VarDecl();
+    /*
+    case TokenType::FUNCTION: // TODO: implement
+        return ;
+    case TokenType::PROCEDURE: // TODO: implement
+        return ;
+    */
+    default:
+        Error::ThrowError(GetCurrTok().line_num, "declaration expected.");
+    }
+}
+
+std::unique_ptr<Stmt> Parser::VarDecl()
+{
+    Eat(TokenType::VAR, "'var' expected.");
+    std::unordered_map<int, std::vector<Token>> variables;
+    
+    int type_id = 0;
+
+    if (GetCurrTok().type != TokenType::ID)
+    {
+        Error::ThrowError(GetCurrTok().line_num, "identifier expected.");
+    }
+
+    while (GetCurrTok().type == TokenType::ID)
+    {
+        std::vector<Token> tokens; // make super tokens vector is empty
+        tokens.push_back(Eat(TokenType::ID, "identifier expected."));
+        while (NextMatchWith(std::vector<TokenType>{TokenType::COMMA}))
+        {
+            tokens.push_back(Eat(TokenType::ID, "identifier expected."));
+        }
+        Eat(TokenType::COLON, "':' expected.");
+
+        switch (GetCurrTok().type)
+        {
+        case TokenType::INTEGER_TYPE: // 1
+            type_id = 1;
+            break;
+        case TokenType::BOOL_TYPE: // 2
+            type_id = 2;
+            break;
+        case TokenType::STRING_TYPE: // 3
+            type_id = 3;
+            break;
+        default:
+            Error::ThrowError(GetCurrTok().line_num, "invalid variable type.");
+        }
+        Advance();
+
+        if (variables.find(type_id) != variables.end()) // type_id is already there
+        {
+            variables[type_id].insert(variables[type_id].end(), tokens.begin(), tokens.end()); // add variables to the same type key
+        }
+        else // type_id denotes a new type
+        {
+            variables[type_id] = tokens;
+        }
+        Eat(TokenType::SEMICOLON, "';' expected.");
+    }
+    return std::make_unique<VarDeclStmt>(variables);
 }
 
 std::unique_ptr<Stmt> Parser::WritelnStatement()
@@ -209,7 +285,7 @@ std::unique_ptr<Expr> Parser::Term()
     return factor;
 }
 
-// Factor -> ("+" | "-" | "not") Factor | FunctionExpr | INTEGER | "true" | "false" | STRING | CHAR | "(" Expression ")"
+// Factor -> ("+" | "-" | "not") Factor | FunctionExpr | INTEGER | "true" | "false" | STRING | "(" Expression ")" | IDENTIFIER
 std::unique_ptr<Expr> Parser::Factor()
 {
     const std::vector<TokenType> unary_operators
@@ -236,6 +312,11 @@ std::unique_ptr<Expr> Parser::Factor()
         std::unique_ptr<Expr> expr = Expression();
         Eat(TokenType::RIGHT_PAR, "')' expected after expression.");
         return std::make_unique<GroupingExpr>(std::move(expr));
+    }
+
+    if (NextMatchWith(std::vector<TokenType>{TokenType::ID}))
+    {
+        return std::make_unique<VariableExpr>(std::move(GetPrevious()));
     }
 
     Error::ThrowError(GetCurrTok().line_num, "expression expected.");

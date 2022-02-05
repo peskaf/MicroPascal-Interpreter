@@ -10,16 +10,23 @@ int main(int argc, char const* argv[])
 	{
 		std::string input =
 			"program test; \n"
+			"var a:integer;\n"
+			"b:boolean;"
+			"c:integer;"
 			"begin		 \n"
-			"writeln(78965*458-887 div 3);\n"
-			"writeln();\n"
-			"writeln();\n"
-			"writeln('string');\n"
-			"writeln('ahoj',5,true);;;;\n"
+			"writeln(a);\n"
+			"writeln(b);\n"
+			"writeln(c);\n"
 			"end.\n";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
+		/*/
+		for (auto&& tok : tokens)
+		{
+			tok.Print();
+		}
+		/**/
 
 		Parser par(tokens);
 		Interpreter interpreter;
@@ -27,10 +34,7 @@ int main(int argc, char const* argv[])
 		interpreter.Interpret(par.Parse());
 
 		/*
-		for (auto&& tok : tokens)
-		{
-			tok.Print();
-		}
+		
 		*/
 	}
 	catch (const std::exception& e)

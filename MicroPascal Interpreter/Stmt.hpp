@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <vector>
+#include <unordered_map>
 
 #include "Token.hpp"
 #include "Expr.hpp"
@@ -11,6 +12,7 @@ class WritelnStmt;
 class CompoundStmt;
 class ProgramStmt;
 class EmptyStmt;
+class VarDeclStmt;
 
 class VisitorStmt
 {
@@ -19,6 +21,7 @@ public:
 	virtual void Visit(CompoundStmt& compundStmt) = 0;
 	virtual void Visit(ProgramStmt& programStmt) = 0;
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
+	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
 };
 
 class Stmt
@@ -31,11 +34,12 @@ public:
 class ProgramStmt : public Stmt
 {
 public:
-	ProgramStmt(Token m_id, std::unique_ptr<Stmt> m_stmt);
+	ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::optional<std::vector<std::unique_ptr<Stmt>>> m_decl_stmts);
 
 	void Accept(VisitorStmt& visitor) override;
 
-	Token id;
+	std::string id;
+	std::optional<std::vector<std::unique_ptr<Stmt>>> decl_stmts;
 	std::unique_ptr<Stmt> stmt;
 };
 
@@ -67,6 +71,16 @@ public:
 	void Accept(VisitorStmt& visitor) override;
 };
 
+class VarDeclStmt : public Stmt
+{
+public:
+	VarDeclStmt(std::unordered_map<int, std::vector<Token>> m_variables);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	std::unordered_map<int, std::vector<Token>> variables;
+};
 
 
-#endif STMT_HPP
+
+#endif // !STMT_HPP

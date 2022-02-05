@@ -93,6 +93,11 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 	return grExpr.expr->Accept(*this);
 }
 
+Literal Interpreter::Visit(VariableExpr& varExpr)
+{
+	return env.Get(varExpr.token);
+}
+
 void Interpreter::Visit(WritelnStmt& writelnStmt)
 {
 	if (!writelnStmt.exprs.has_value()) // empty -> writeln()
@@ -112,9 +117,30 @@ void Interpreter::Visit(WritelnStmt& writelnStmt)
 
 void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
 
+void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
+{
+	for (auto&& [type_id, tok_vec] : varDeclStmt.variables)
+	{
+		for (auto&& tok : tok_vec)
+		{
+			env.Define(tok, type_id);
+		}
+	}
+}
+
 void Interpreter::Visit(ProgramStmt& programStmt)
 {
-	return programStmt.stmt->Accept(*this);
+	// first interpret all declarations
+	if (programStmt.decl_stmts.has_value()) // there are some decl
+	{
+		for (auto&& declStmt : programStmt.decl_stmts.value())
+		{
+			declStmt->Accept(*this);
+		}
+	}
+
+	// then compound statement
+	programStmt.stmt->Accept(*this); 
 }
 
 void Interpreter::Visit(CompoundStmt& compoundStmt)

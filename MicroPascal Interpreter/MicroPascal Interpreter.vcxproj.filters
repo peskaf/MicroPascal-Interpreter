@@ -36,6 +36,9 @@
     <ClCompile Include="Stmt.cpp">
       <Filter>Zdrojové soubory</Filter>
     </ClCompile>
+    <ClCompile Include="Environment.cpp">
+      <Filter>Zdrojové soubory</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TokenType.hpp">
@@ -60,6 +63,9 @@
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
     <ClInclude Include="Stmt.hpp">
+      <Filter>Hlavičkové soubory</Filter>
+    </ClInclude>
+    <ClInclude Include="Environment.hpp">
       <Filter>Hlavičkové soubory</Filter>
     </ClInclude>
   </ItemGroup>

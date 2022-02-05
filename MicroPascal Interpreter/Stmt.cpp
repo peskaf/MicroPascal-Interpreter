@@ -1,6 +1,6 @@
 #include "Stmt.hpp"
 
-ProgramStmt::ProgramStmt(Token m_id, std::unique_ptr<Stmt> m_stmt) : id(m_id), stmt(std::move(m_stmt)) {};
+ProgramStmt::ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::optional < std::vector<std::unique_ptr<Stmt>>> m_decl_stmts) : id(m_id), stmt(std::move(m_stmt)), decl_stmts(std::move(m_decl_stmts)) {};
 
 void ProgramStmt::Accept(VisitorStmt& visitor)
 {
@@ -24,6 +24,13 @@ void WritelnStmt::Accept(VisitorStmt& visitor)
 EmptyStmt::EmptyStmt() {};
 
 void EmptyStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}
+
+VarDeclStmt::VarDeclStmt(std::unordered_map<int, std::vector<Token>> m_variables) : variables(m_variables) {};
+
+void VarDeclStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }

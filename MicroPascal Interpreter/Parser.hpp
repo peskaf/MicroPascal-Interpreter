@@ -46,6 +46,10 @@ private:
 
     std::vector<std::unique_ptr<Stmt>> StatementList();
 
+    std::unique_ptr<Stmt> Declaration();
+
+    std::unique_ptr<Stmt> VarDecl();
+
     std::unique_ptr<Stmt> WritelnStatement();
 
     std::unique_ptr<Stmt> Program();

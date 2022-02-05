@@ -52,7 +52,6 @@ enum class TokenType
 	FUNCTION,
 	WRITELN,
 	STRING_TYPE,
-	CHAR_TYPE,
 	INTEGER_TYPE,
 	BOOL_TYPE,
 	DIV,
@@ -187,9 +186,6 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& token_type) {
 		break;
 	case TokenType::STRING_TYPE:
 		type_string = "STRING_TYPE";
-		break;
-	case TokenType::CHAR_TYPE:
-		type_string = "CHAR_TYPE";
 		break;
 	case TokenType::INTEGER_TYPE:
 		type_string = "INTEGER_TYPE";
