@@ -8,7 +8,12 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input = "writeln(not true)";
+		std::string input =
+			"program ; \n"
+			"begin		 \n"
+			"writeln(78965*458-887 div 3)\n"
+			"writeln(78965*458-887 div 3)\n"
+			"end.\n";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();

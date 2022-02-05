@@ -10,6 +10,9 @@
 class Interpreter : public VisitorExpr, public VisitorStmt
 {
 public:
+	void Interpret(std::unique_ptr<Stmt> stmt);
+
+private:
 	Literal Visit(BinaryExpr& binExpr) override;
 
 	Literal Visit(LiteralExpr& litExpr) override;
@@ -18,11 +21,12 @@ public:
 
 	Literal Visit(GroupingExpr& grExpr) override;
 
-	void Visit(WritelnStmt& writelnExpr) override;
+	void Visit(WritelnStmt& writelnStmt) override;
 
-	void Interpret(std::vector<std::unique_ptr<Stmt>> statements);
+	void Visit(CompoundStmt& compoundStmt) override;
 
-private:
+	void Visit(ProgramStmt& program) override;
+
 	bool IsInt(Literal& lit);
 
 	bool IsString(Literal& lit);

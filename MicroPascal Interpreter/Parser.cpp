@@ -3,27 +3,64 @@
 
 Parser::Parser(std::vector<Token>& m_tokens) : tokens(m_tokens) {};
 
-std::vector<std::unique_ptr<Stmt>> Parser::Parse()
+std::unique_ptr<Stmt> Parser::Parse()
 {
-    std::vector<std::unique_ptr<Stmt>> statements;
-    while (!IsAtEnd())
+    return Program();
+}
+
+std::unique_ptr<Stmt> Parser::Program()
+{
+    Eat(TokenType::PROGRAM, "'program' expected.");
+    // TODO: ID
+
+    Eat(TokenType::SEMICOLON, "';' expected.");
+    // TODO: declarations
+
+    std::unique_ptr<Stmt> comp_stmt = CompoundStatement();
+    Eat(TokenType::DOT, "'.' expected.");
+
+    if (!IsAtEnd()) // to avoid some "code" after '.'
     {
-        statements.push_back(Statement());
+        Error::ThrowError(GetCurrTok().line_num, "EOF expected.");
     }
-    return statements;
+    return std::move(comp_stmt);
 }
 
 std::unique_ptr<Stmt> Parser::Statement()
 {
-    if (NextMatchWith(std::vector<TokenType>{TokenType::WRITELN}))
+    switch (GetCurrTok().type)
     {
+    case TokenType::WRITELN:
         return WritelnStatement();
+    case TokenType::BEGIN:
+        return CompoundStatement();
+    default:
+        Error::ThrowError(GetCurrTok().line_num, "statement expected.");
+    }  
+}
+
+std::unique_ptr<Stmt> Parser::CompoundStatement()
+{
+    Eat(TokenType::BEGIN, "'begin' expected.");
+    std::vector<std::unique_ptr<Stmt>> statement_list = StatementList();
+    Eat(TokenType::END, "';' expected."); // end not found -> there should have been ';' separating statements
+    return std::make_unique<CompoundStmt>(std::move(statement_list));
+}
+
+std::vector<std::unique_ptr<Stmt>> Parser::StatementList()
+{
+    std::vector<std::unique_ptr<Stmt>> statement_list;
+    statement_list.push_back(Statement());
+    while (NextMatchWith(std::vector<TokenType>{TokenType::SEMICOLON}))
+    {
+        statement_list.push_back(Statement());
     }
-    Error::ThrowError(GetCurrTok().line_num, "statement expected.");
+    return statement_list;
 }
 
 std::unique_ptr<Stmt> Parser::WritelnStatement()
 {
+    Eat(TokenType::WRITELN, "'writeln' expected.");
     Eat(TokenType::LEFT_PAR, "'(' expected.");
     std::unique_ptr<Expr> to_print = Expression();
     Eat(TokenType::RIGHT_PAR, "')' expected.");

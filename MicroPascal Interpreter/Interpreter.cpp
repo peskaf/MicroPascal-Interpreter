@@ -105,12 +105,22 @@ void Interpreter::Visit(WritelnStmt& writelnStmt)
 	std::cout << LitToString(to_print) << std::endl;
 }
 
-void Interpreter::Interpret(std::vector<std::unique_ptr<Stmt>> statements)
+void Interpreter::Visit(ProgramStmt& program)
 {
-	for (auto&& stmt : statements)
+	return program.stmt->Accept(*this);
+}
+
+void Interpreter::Visit(CompoundStmt& compoundStmt)
+{
+	for (auto&& stmt : compoundStmt.statements)
 	{
 		stmt->Accept(*this);
 	}
+}
+
+void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
+{
+	stmt->Accept(*this);
 }
 
 // 1 .. int, 2 .. bool, 3 .. string

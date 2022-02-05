@@ -15,7 +15,7 @@ class Parser // syntactic analysis, creates AST, contains grammar rules
 public:
     Parser(std::vector<Token>& m_tokens);
 
-    std::vector<std::unique_ptr<Stmt>> Parse();
+    std::unique_ptr<Stmt> Parse();
 
 private:
     Token GetCurrTok();
@@ -42,7 +42,13 @@ private:
 
     std::unique_ptr<Stmt> Statement();
 
+    std::unique_ptr<Stmt> CompoundStatement();
+
+    std::vector<std::unique_ptr<Stmt>> StatementList();
+
     std::unique_ptr<Stmt> WritelnStatement();
+
+    std::unique_ptr<Stmt> Program();
 
     std::vector<Token> tokens;
     int curr_tok_num = 0;
