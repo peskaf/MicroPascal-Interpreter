@@ -34,6 +34,8 @@ private:
 
 	void Visit(VarDeclStmt& varDeclStmt) override;
 
+	void Visit(AssignmentStmt& assignmentStmt) override;
+
 	bool IsInt(Literal& lit);
 
 	bool IsString(Literal& lit);

@@ -43,6 +43,8 @@ std::unique_ptr<Stmt> Parser::Statement()
         return WritelnStatement();
     case TokenType::BEGIN:
         return CompoundStatement();
+    case TokenType::ID:
+        return AssignmentStatement();
     default:
         return EmptyStatement();
     }  
@@ -52,6 +54,16 @@ std::unique_ptr<Stmt> Parser::EmptyStatement()
 {
     return std::make_unique<EmptyStmt>();
 }
+
+std::unique_ptr<Stmt> Parser::AssignmentStatement()
+{
+    Token id = Eat(TokenType::ID, "identifier expected.");
+    Eat(TokenType::ASSIGN, "':=' expected.");
+    std::unique_ptr<Expr> value = Expression();
+
+    return std::make_unique<AssignmentStmt>(id, std::move(value));
+}
+
 std::unique_ptr<Stmt> Parser::CompoundStatement()
 {
     Eat(TokenType::BEGIN, "'begin' expected.");

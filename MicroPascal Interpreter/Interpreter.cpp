@@ -151,6 +151,11 @@ void Interpreter::Visit(CompoundStmt& compoundStmt)
 	}
 }
 
+void Interpreter::Visit(AssignmentStmt& assignmentStmt)
+{
+	env.Assign(assignmentStmt.token, assignmentStmt.value->Accept(*this));
+}
+
 void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
 {
 	stmt->Accept(*this);

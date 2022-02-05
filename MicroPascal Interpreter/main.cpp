@@ -11,12 +11,12 @@ int main(int argc, char const* argv[])
 		std::string input =
 			"program test; \n"
 			"var a:integer;\n"
-			"b:boolean;"
-			"c:integer;"
 			"begin		 \n"
 			"writeln(a);\n"
-			"writeln(b);\n"
-			"writeln(c);\n"
+			"a := 45 * 9 + a - 2 div 3;\n"
+			"writeln(a);\n"
+			"a := a - 404;\n"
+			"writeln(a);\n"
 			"end.\n";
 
 		Lexer lex(input);
@@ -27,6 +27,15 @@ int main(int argc, char const* argv[])
 			tok.Print();
 		}
 		/**/
+
+		/*
+		TODO:
+		o Variable assignment
+		o Flow control
+		o Fnc/proc declaration
+		o Fnc/Proc call
+		o ENDE!!!!!!!!!!!
+		*/
 
 		Parser par(tokens);
 		Interpreter interpreter;

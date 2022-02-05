@@ -34,3 +34,10 @@ void VarDeclStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }
+
+AssignmentStmt::AssignmentStmt(Token m_token, std::unique_ptr<Expr> m_value) : token(m_token), value(std::move(m_value)) {};
+
+void AssignmentStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}

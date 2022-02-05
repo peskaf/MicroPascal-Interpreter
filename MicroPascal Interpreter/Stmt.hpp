@@ -13,6 +13,7 @@ class CompoundStmt;
 class ProgramStmt;
 class EmptyStmt;
 class VarDeclStmt;
+class AssignmentStmt;
 
 class VisitorStmt
 {
@@ -22,6 +23,7 @@ public:
 	virtual void Visit(ProgramStmt& programStmt) = 0;
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
+	virtual void Visit(AssignmentStmt& varDeclStmt) = 0;
 };
 
 class Stmt
@@ -81,6 +83,16 @@ public:
 	std::unordered_map<int, std::vector<Token>> variables;
 };
 
+class AssignmentStmt : public Stmt
+{
+public:
+	AssignmentStmt(Token m_token, std::unique_ptr<Expr> m_value);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	Token token;
+	std::unique_ptr<Expr> value;
+};
 
 
 #endif // !STMT_HPP

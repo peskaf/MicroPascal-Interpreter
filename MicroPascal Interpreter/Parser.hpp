@@ -56,6 +56,8 @@ private:
 
     std::unique_ptr<Stmt> EmptyStatement();
 
+    std::unique_ptr<Stmt> AssignmentStatement();
+
     std::vector<Token> tokens;
     int curr_tok_num = 0;
 };
