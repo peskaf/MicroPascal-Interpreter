@@ -10,13 +10,15 @@
 class WritelnStmt;
 class CompoundStmt;
 class ProgramStmt;
+class EmptyStmt;
 
 class VisitorStmt
 {
 public:
 	virtual void Visit(WritelnStmt& writelnStmt) = 0;
 	virtual void Visit(CompoundStmt& compundStmt) = 0;
-	virtual void Visit(ProgramStmt& program) = 0;
+	virtual void Visit(ProgramStmt& programStmt) = 0;
+	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 };
 
 class Stmt
@@ -54,6 +56,14 @@ public:
 	void Accept(VisitorStmt& visitor) override;
 
 	std::vector<std::unique_ptr<Stmt>> statements;
+};
+
+class EmptyStmt : public Stmt
+{
+public:
+	EmptyStmt();
+
+	void Accept(VisitorStmt& visitor) override;
 };
 
 

@@ -35,7 +35,8 @@ std::unique_ptr<Stmt> Parser::Statement()
     case TokenType::BEGIN:
         return CompoundStatement();
     default:
-        Error::ThrowError(GetCurrTok().line_num, "statement expected.");
+        return std::make_unique<EmptyStmt>();
+        // Error::ThrowError(GetCurrTok().line_num, "statement expected.");
     }  
 }
 

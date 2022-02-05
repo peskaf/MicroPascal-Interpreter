@@ -15,7 +15,7 @@ int main(int argc, char const* argv[])
 			"writeln();\n"
 			"writeln();\n"
 			"writeln('string');\n"
-			"writeln('ahoj',5,true)\n"
+			"writeln('ahoj',5,true);;;;\n"
 			"end.\n";
 
 		Lexer lex(input);

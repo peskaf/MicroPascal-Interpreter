@@ -20,3 +20,10 @@ void WritelnStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 };
+
+EmptyStmt::EmptyStmt() {};
+
+void EmptyStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}

@@ -110,9 +110,11 @@ void Interpreter::Visit(WritelnStmt& writelnStmt)
 	std::cout << std::endl; // new line and flush
 }
 
-void Interpreter::Visit(ProgramStmt& program)
+void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
+
+void Interpreter::Visit(ProgramStmt& programStmt)
 {
-	return program.stmt->Accept(*this);
+	return programStmt.stmt->Accept(*this);
 }
 
 void Interpreter::Visit(CompoundStmt& compoundStmt)

@@ -25,7 +25,9 @@ private:
 
 	void Visit(CompoundStmt& compoundStmt) override;
 
-	void Visit(ProgramStmt& program) override;
+	void Visit(ProgramStmt& programStmt) override;
+
+	void Visit(EmptyStmt& emptyStmt) override;
 
 	bool IsInt(Literal& lit);
 
