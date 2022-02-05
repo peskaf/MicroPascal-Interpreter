@@ -11,7 +11,8 @@ std::unique_ptr<Stmt> Parser::Parse()
 std::unique_ptr<Stmt> Parser::Program()
 {
     Eat(TokenType::PROGRAM, "'program' expected.");
-    // TODO: ID
+    
+    Token id = Eat(TokenType::ID, "identifier expected.");
 
     Eat(TokenType::SEMICOLON, "';' expected.");
     // TODO: declarations
@@ -23,7 +24,7 @@ std::unique_ptr<Stmt> Parser::Program()
     {
         Error::ThrowError(GetCurrTok().line_num, "EOF expected.");
     }
-    return std::move(comp_stmt);
+    return std::make_unique<ProgramStmt>(id, std::move(comp_stmt));
 }
 
 std::unique_ptr<Stmt> Parser::Statement()
@@ -132,12 +133,12 @@ bool Parser::NextMatchWith(std::vector<TokenType> token_types)
     return false;
 }
 
-void Parser::Eat(TokenType expected_type, std::string error_message)
+Token Parser::Eat(TokenType expected_type, std::string error_message)
 {
     if (Check(expected_type))
     {
         Advance();
-        return;
+        return GetPrevious();
     }
     
     Error::ThrowError(GetCurrTok().line_num, error_message);

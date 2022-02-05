@@ -31,10 +31,11 @@ public:
 class ProgramStmt : public Stmt
 {
 public:
-	ProgramStmt(std::unique_ptr<Stmt> m_stmt);
+	ProgramStmt(Token m_id, std::unique_ptr<Stmt> m_stmt);
 
 	void Accept(VisitorStmt& visitor) override;
 
+	Token id;
 	std::unique_ptr<Stmt> stmt;
 };
 

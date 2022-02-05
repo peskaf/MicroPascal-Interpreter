@@ -30,7 +30,7 @@ private:
 
     bool NextMatchWith(std::vector<TokenType> token_types);
 
-    void Eat(TokenType expected_type, std::string error_message);
+    Token Eat(TokenType expected_type, std::string error_message);
 
     std::unique_ptr<Expr> Expression();
 

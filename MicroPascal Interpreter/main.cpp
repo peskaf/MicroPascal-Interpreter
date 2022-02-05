@@ -9,7 +9,7 @@ int main(int argc, char const* argv[])
 	try
 	{
 		std::string input =
-			"program ; \n"
+			"program test; \n"
 			"begin		 \n"
 			"writeln(78965*458-887 div 3);\n"
 			"writeln();\n"
