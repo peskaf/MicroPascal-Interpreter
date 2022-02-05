@@ -62,9 +62,24 @@ std::unique_ptr<Stmt> Parser::WritelnStatement()
 {
     Eat(TokenType::WRITELN, "'writeln' expected.");
     Eat(TokenType::LEFT_PAR, "'(' expected.");
-    std::unique_ptr<Expr> to_print = Expression();
+
+    if (NextMatchWith(std::vector<TokenType>{TokenType::RIGHT_PAR}))
+    {
+        return std::make_unique<WritelnStmt>(std::nullopt);
+    }
+
+    std::vector<std::unique_ptr<Expr>> exprs;
+
+    exprs.push_back(Expression());
+
+    while (GetCurrTok().type != TokenType::RIGHT_PAR)
+    {
+        Eat(TokenType::COMMA, "',' expected,");
+        exprs.push_back(Expression());
+    }
+
     Eat(TokenType::RIGHT_PAR, "')' expected.");
-    return std::make_unique<WritelnStmt>(std::move(to_print));
+    return std::make_unique<WritelnStmt>(std::move(exprs));
 }
 
 

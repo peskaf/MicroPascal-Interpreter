@@ -11,8 +11,11 @@ int main(int argc, char const* argv[])
 		std::string input =
 			"program ; \n"
 			"begin		 \n"
-			"writeln(78965*458-887 div 3)\n"
-			"writeln(78965*458-887 div 3)\n"
+			"writeln(78965*458-887 div 3);\n"
+			"writeln();\n"
+			"writeln();\n"
+			"writeln('string');\n"
+			"writeln('ahoj',5,true)\n"
 			"end.\n";
 
 		Lexer lex(input);

@@ -39,11 +39,11 @@ public:
 class WritelnStmt : public Stmt
 {
 public:
-	WritelnStmt(std::optional<std::unique_ptr<Expr>> m_expr);
+	WritelnStmt(std::optional<std::vector<std::unique_ptr<Expr>>> m_exprs);
 
 	void Accept(VisitorStmt& visitor) override;
 
-	std::optional<std::unique_ptr<Expr>> expr;
+	std::optional<std::vector<std::unique_ptr<Expr>>> exprs;
 };
 
 class CompoundStmt : public Stmt

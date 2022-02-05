@@ -14,7 +14,7 @@ void CompoundStmt::Accept(VisitorStmt& visitor)
 	return visitor.Visit(*this);
 }
 
-WritelnStmt::WritelnStmt(std::optional<std::unique_ptr<Expr>> m_expr) : expr(std::move(m_expr)) {};
+WritelnStmt::WritelnStmt(std::optional<std::vector<std::unique_ptr<Expr>>> m_exprs) : exprs(std::move(m_exprs)) {};
 
 void WritelnStmt::Accept(VisitorStmt& visitor)
 {

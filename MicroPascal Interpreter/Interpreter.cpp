@@ -95,14 +95,19 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 
 void Interpreter::Visit(WritelnStmt& writelnStmt)
 {
-	if (!writelnStmt.expr.has_value()) // empty -> writeln()
+	if (!writelnStmt.exprs.has_value()) // empty -> writeln()
 	{
 		std::cout << std::endl;
 		return;
 	}
 
-	Literal to_print = writelnStmt.expr.value()->Accept(*this); // evaluate expression it has
-	std::cout << LitToString(to_print) << std::endl;
+	for (auto&& expr : writelnStmt.exprs.value()) // evaluate all expressions inside writeln stmt
+	{
+		Literal to_print = expr->Accept(*this);
+		std::cout << LitToString(to_print);
+	}
+
+	std::cout << std::endl; // new line and flush
 }
 
 void Interpreter::Visit(ProgramStmt& program)

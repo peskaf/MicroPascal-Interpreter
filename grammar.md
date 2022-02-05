@@ -22,7 +22,7 @@ functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
 procedureStmt -> IDENTIFIER ("(" exprList ")")?;
 
-writelnStmt -> "writeln" "(" expression? ")";
+writelnStmt -> "writeln" "(" exprList? ")";
 
 ifStmt -> "if" expression "then" statement ("else" statement)?;
 
