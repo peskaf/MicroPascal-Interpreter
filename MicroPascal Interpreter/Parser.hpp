@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Expr.hpp"
+#include "Stmt.hpp"
 #include "TokenType.hpp"
 #include "Token.hpp"
 
@@ -14,7 +15,7 @@ class Parser // syntactic analysis, creates AST, contains grammar rules
 public:
     Parser(std::vector<Token>& m_tokens);
 
-    std::unique_ptr<Expr> Parse();
+    std::vector<std::unique_ptr<Stmt>> Parse();
 
 private:
     Token GetCurrTok();
@@ -38,6 +39,10 @@ private:
     std::unique_ptr<Expr> Term();
 
     std::unique_ptr<Expr> Factor();
+
+    std::unique_ptr<Stmt> Statement();
+
+    std::unique_ptr<Stmt> WritelnStatement();
 
     std::vector<Token> tokens;
     int curr_tok_num = 0;

@@ -4,7 +4,7 @@
 
 BinaryExpr::BinaryExpr(std::unique_ptr<Expr> m_left, std::unique_ptr<Expr> m_right, Token& m_op) : left(std::move(m_left)), right(std::move(m_right)), op(m_op) {};
 	
-Literal BinaryExpr::Accept(Visitor& visitor)
+Literal BinaryExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 };
@@ -12,7 +12,7 @@ Literal BinaryExpr::Accept(Visitor& visitor)
 
 UnaryExpr::UnaryExpr(std::unique_ptr<Expr> m_right, Token& m_op) : right(std::move(m_right)), op(m_op) {};
 
-Literal UnaryExpr::Accept(Visitor& visitor)
+Literal UnaryExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 };
@@ -20,7 +20,7 @@ Literal UnaryExpr::Accept(Visitor& visitor)
 
 LiteralExpr::LiteralExpr(Literal m_value) : value(m_value) {};
 
-Literal LiteralExpr::Accept(Visitor& visitor)
+Literal LiteralExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 };
@@ -28,7 +28,7 @@ Literal LiteralExpr::Accept(Visitor& visitor)
 
 GroupingExpr::GroupingExpr(std::unique_ptr<Expr> m_expr) : expr(std::move(m_expr)) {};
 
-Literal GroupingExpr::Accept(Visitor& visitor)
+Literal GroupingExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 };

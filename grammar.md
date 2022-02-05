@@ -16,13 +16,13 @@ identifierList -> IDENTIFIER ("," IDENTIFIER)*;
 
 statementList -> statement (";" statement)*;
 
-statement -> writelnStmt | procedureStmt | functionExpr | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
+statement -> writelnStmt | procedureStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | nothing;
 
 functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
 procedureStmt -> IDENTIFIER ("(" exprList ")")?;
 
-writelnStmt -> "writeln" "(" expression ")";
+writelnStmt -> "writeln" "(" expression? ")";
 
 ifStmt -> "if" expression "then" statement ("else" statement)?;
 

@@ -153,6 +153,7 @@
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Stmt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.hpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Interpreter.hpp" />
     <ClInclude Include="Lexer.hpp" />
     <ClInclude Include="Parser.hpp" />
+    <ClInclude Include="Stmt.hpp" />
     <ClInclude Include="Token.hpp" />
     <ClInclude Include="TokenType.hpp" />
   </ItemGroup>

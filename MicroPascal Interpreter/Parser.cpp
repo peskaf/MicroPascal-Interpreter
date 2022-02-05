@@ -3,10 +3,33 @@
 
 Parser::Parser(std::vector<Token>& m_tokens) : tokens(m_tokens) {};
 
-std::unique_ptr<Expr> Parser::Parse()
+std::vector<std::unique_ptr<Stmt>> Parser::Parse()
 {
-    return Expression();
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!IsAtEnd())
+    {
+        statements.push_back(Statement());
+    }
+    return statements;
 }
+
+std::unique_ptr<Stmt> Parser::Statement()
+{
+    if (NextMatchWith(std::vector<TokenType>{TokenType::WRITELN}))
+    {
+        return WritelnStatement();
+    }
+    Error::ThrowError(GetCurrTok().line_num, "statement expected.");
+}
+
+std::unique_ptr<Stmt> Parser::WritelnStatement()
+{
+    Eat(TokenType::LEFT_PAR, "'(' expected.");
+    std::unique_ptr<Expr> to_print = Expression();
+    Eat(TokenType::RIGHT_PAR, "')' expected.");
+    return std::make_unique<WritelnStmt>(std::move(to_print));
+}
+
 
 Token Parser::GetCurrTok()
 {
@@ -58,7 +81,9 @@ void Parser::Eat(TokenType expected_type, std::string error_message)
     if (Check(expected_type))
     {
         Advance();
+        return;
     }
+    
     Error::ThrowError(GetCurrTok().line_num, error_message);
 }
 
@@ -127,7 +152,7 @@ std::unique_ptr<Expr> Parser::Term()
     return factor;
 }
 
-// Factor -> ("+" | "-" | "not") Factor | FunctionStmt (TODO) | INTEGER | "(" Expression ")" | "true" | "false" | STRING | CHAR -- (function stmt je tedy expr? -> to vyresit)
+// Factor -> ("+" | "-" | "not") Factor | FunctionExpr | INTEGER | "true" | "false" | STRING | CHAR | "(" Expression ")"
 std::unique_ptr<Expr> Parser::Factor()
 {
     const std::vector<TokenType> unary_operators

@@ -72,9 +72,9 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 		switch (unExpr.op.type)
 		{
 		case TokenType::MINUS:
-			return -std::get<int>(unExpr.right->Accept(*this));
+			return -std::get<int>(right_value);
 		case TokenType::PLUS:
-			return std::get<int>(unExpr.right->Accept(*this));
+			return std::get<int>(right_value);
 		default:
 			break;
 		}
@@ -82,7 +82,7 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 
 	if (IsBool(right_value) && unExpr.op.type == TokenType::NOT)
 	{
-		return !std::get<bool>(unExpr.right->Accept(*this));
+		return !std::get<bool>(right_value);
 	}
 	
 	Error::ThrowError(unExpr.op.line_num, "type incompatible with given operator.");
@@ -93,23 +93,23 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 	return grExpr.expr->Accept(*this);
 }
 
-// neni finalni!!!
-void Interpreter::Interpret(std::unique_ptr<Expr> expr)
+void Interpreter::Visit(WritelnStmt& writelnStmt)
 {
-	Literal result = expr->Accept(*this);
-	if (IsInt(result))
+	if (!writelnStmt.expr.has_value()) // empty -> writeln()
 	{
-		std::cout << std::get<int>(result) << std::endl;
+		std::cout << std::endl;
 		return;
 	}
-	else if (IsString(result))
+
+	Literal to_print = writelnStmt.expr.value()->Accept(*this); // evaluate expression it has
+	std::cout << LitToString(to_print) << std::endl;
+}
+
+void Interpreter::Interpret(std::vector<std::unique_ptr<Stmt>> statements)
+{
+	for (auto&& stmt : statements)
 	{
-		std::cout << std::get<std::string>(result) << std::endl;
-		return;
-	}
-	else if (IsBool(result))
-	{
-		std::cout << (std::get<bool>(result) ? "true" : "false") << std::endl;
+		stmt->Accept(*this);
 	}
 }
 
@@ -127,4 +127,23 @@ bool Interpreter::IsBool(Literal& lit)
 bool Interpreter::IsString(Literal& lit)
 {
 	return lit.index() == 3;
+}
+
+std::string Interpreter::LitToString(Literal& lit)
+{
+	if (IsBool(lit))
+	{
+		return (std::get<bool>(lit) ? "true" : "false");
+	}
+	if (IsInt(lit))
+	{
+		return std::to_string(std::get<int>(lit));
+	}
+	if (IsString(lit))
+	{
+		return std::get<std::string>(lit);
+	}
+
+	// should be unreachable -> will delete nullptr in literal variant
+	Error::ThrowError(0, "invalid literal value."); // TODO: jeste poresit
 }

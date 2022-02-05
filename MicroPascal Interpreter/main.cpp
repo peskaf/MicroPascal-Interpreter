@@ -8,7 +8,7 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input = "55 div 0";
+		std::string input = "writeln(not true)";
 
 		Lexer lex(input);
 		std::vector<Token> tokens = lex.GetTokens();
@@ -18,10 +18,12 @@ int main(int argc, char const* argv[])
 
 		interpreter.Interpret(par.Parse());
 
+		/*
 		for (auto&& tok : tokens)
 		{
 			tok.Print();
 		}
+		*/
 	}
 	catch (const std::exception& e)
 	{
