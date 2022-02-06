@@ -36,6 +36,8 @@ private:
 
 	void Visit(VarDeclStmt& varDeclStmt) override;
 
+	void Visit(FuncDeclStmt& funcDeclStmt) override;
+
 	void Visit(AssignmentStmt& assignmentStmt) override;
 
 	void Visit(IfStmt& ifStmt) override;

@@ -50,6 +50,12 @@ private:
 
     std::unique_ptr<Stmt> VarDecl();
 
+    std::unique_ptr<Stmt> FuncDecl();
+
+    std::vector<std::unique_ptr<Stmt>> Declarations();
+
+    std::vector<std::pair<std::string, VariableType>> ParameterList();
+
     std::unique_ptr<Stmt> WritelnStatement();
 
     std::unique_ptr<Stmt> Program();

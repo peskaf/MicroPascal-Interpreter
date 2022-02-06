@@ -26,23 +26,25 @@ public:
 	std::shared_ptr<Callable> GetCallable(Token name);
 	void Assign(Token name, Literal value);
 
-private:
-	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values;
 	std::shared_ptr<Environment> enclosing_env;
+
+	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values; // pak dat zpet do private!!
+private:
+	
 };
 
 
 class Callable {
 public:
-	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, bool m_is_function);
+	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, std::optional<VariableType> m_return_type);
+	
 	void PassArguments(std::vector<Literal>);
 
 	std::shared_ptr<Environment> local_env;
 	std::shared_ptr<Stmt> body;
-	bool is_function;
+	std::optional<VariableType> return_type;
 
 private:
-
 	std::vector<std::pair<std::string, VariableType>> parameters;
 };
 

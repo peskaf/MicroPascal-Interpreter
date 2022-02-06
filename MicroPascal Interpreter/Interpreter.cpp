@@ -130,15 +130,45 @@ void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
 	}
 }
 
+void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
+{
+	// first interpret all declarations
+	std::shared_ptr<Environment> local_env = std::make_shared<Environment>(current_env);
+	current_env = local_env;
+
+	for (auto&& declStmt : funcDeclStmt.decl_stmts)
+	{
+		declStmt->Accept(*this);
+	}
+	
+	// define variable that will serve as return (value in it will be returned), id same as func id
+	current_env->Define(funcDeclStmt.id_token, funcDeclStmt.return_type);
+
+
+
+	funcDeclStmt.id_token.Print();
+	// to del
+	for (auto&& [var, val]: current_env->values)
+	{
+		std::cout << var << " : " << (val.index() == 0 ? "Literal" : "Callable") << std::endl;
+	}
+	std::cout << "----" << std::endl;
+
+
+	// make callable
+	auto&& callable = Callable(local_env, std::move(funcDeclStmt.body), funcDeclStmt.parameters, funcDeclStmt.return_type);
+
+	current_env = local_env->enclosing_env;
+	// define func by id in currend env
+	current_env->Define(funcDeclStmt.id_token, callable);
+}
+
 void Interpreter::Visit(ProgramStmt& programStmt)
 {
 	// first interpret all declarations
-	if (programStmt.decl_stmts.has_value()) // there are some decl
+	for (auto&& declStmt : programStmt.decl_stmts)
 	{
-		for (auto&& declStmt : programStmt.decl_stmts.value())
-		{
-			declStmt->Accept(*this);
-		}
+		declStmt->Accept(*this);
 	}
 
 	// then compound statement

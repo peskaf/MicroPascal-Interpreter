@@ -18,11 +18,7 @@ std::unique_ptr<Stmt> Parser::Program()
     Eat(TokenType::SEMICOLON, "';' expected.");
 
     // declarations
-    std::vector<std::unique_ptr<Stmt>> decl_stmts;
-    while (GetCurrTok().type == TokenType::VAR || GetCurrTok().type == TokenType::PROCEDURE || GetCurrTok().type == TokenType::FUNCTION)
-    {
-        decl_stmts.push_back(Declaration());
-    }
+    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
     
     // comp. stmt
     std::unique_ptr<Stmt> comp_stmt = CompoundStatement();
@@ -154,12 +150,12 @@ std::unique_ptr<Stmt> Parser::Declaration()
     {
     case TokenType::VAR:
         return VarDecl();
-    /*
-    case TokenType::FUNCTION: // TODO: implement
-        return ;
+    case TokenType::FUNCTION:
+        return FuncDecl();
+    /*/
     case TokenType::PROCEDURE: // TODO: implement
         return ;
-    */
+    /**/
     default:
         Error::ThrowError(GetCurrTok().line_num, "declaration expected.");
     }
@@ -222,6 +218,112 @@ std::unique_ptr<Stmt> Parser::VarDecl()
     return std::make_unique<VarDeclStmt>(variables);
 }
 
+std::unique_ptr<Stmt> Parser::FuncDecl()
+{
+    Eat(TokenType::FUNCTION, "'function' expected.");
+    Token id_token = Eat(TokenType::ID, "identifier expected.");
+    std::vector<std::pair<std::string, VariableType>> parameter_list{};
+
+    // is there parameter list?
+    if (GetCurrTok().type == TokenType::LEFT_PAR)
+    {
+        parameter_list = ParameterList();
+    }
+
+    Eat(TokenType::COLON, "':' expected.");
+
+    // return type
+    VariableType return_type;
+    switch (GetCurrTok().type)
+    {
+    case TokenType::INTEGER_TYPE:
+        return_type = VariableType::INTEGER;
+        break;
+    case TokenType::BOOL_TYPE:
+        return_type = VariableType::BOOL;
+        break;
+    case TokenType::STRING_TYPE:
+        return_type = VariableType::STRING;
+        break;
+    default:
+        Error::ThrowError(GetCurrTok().line_num, "type expected.");
+        break;
+    }
+    Advance();
+
+    Eat(TokenType::SEMICOLON, "';' expected.");
+
+    // declarations
+    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
+
+    // body
+    std::unique_ptr<Stmt> body = CompoundStatement();
+
+    Eat(TokenType::SEMICOLON, "';' expected.");
+
+    return std::make_unique<FuncDeclStmt>(id_token, return_type, std::move(body), std::move(decl_stmts), std::move(parameter_list));
+}
+
+std::vector<std::unique_ptr<Stmt>> Parser::Declarations()
+{
+    std::vector<std::unique_ptr<Stmt>> decl_stmts{};
+    while (GetCurrTok().type == TokenType::VAR || GetCurrTok().type == TokenType::PROCEDURE || GetCurrTok().type == TokenType::FUNCTION)
+    {
+        decl_stmts.push_back(Declaration());
+    }
+    return decl_stmts;
+}
+
+std::vector<std::pair<std::string, VariableType>> Parser::ParameterList()
+{
+    Eat(TokenType::LEFT_PAR, "'(' expected.");
+    
+    // if there is no identifier -> there must be right par.
+    if (GetCurrTok().type != TokenType::ID)
+    {
+        Eat(TokenType::RIGHT_PAR, "')' expected.");
+        return {}; //return empty vector
+    }
+
+    std::vector<Token> identifiers;
+    std::vector<std::pair<std::string, VariableType>> parameter_list{};
+
+    do
+    {
+        // get ids
+        identifiers = IdentifierList();
+        Eat(TokenType::COLON, "':' expected.");
+
+        // get type
+        VariableType type;
+        switch (GetCurrTok().type)
+        {
+        case TokenType::INTEGER_TYPE:
+            type = VariableType::INTEGER;
+            break;
+        case TokenType::BOOL_TYPE:
+            type = VariableType::BOOL;
+            break;
+        case TokenType::STRING_TYPE:
+            type = VariableType::STRING;
+            break;
+        default:
+            Error::ThrowError(GetCurrTok().line_num, "type expected.");
+            break;
+        }
+        Advance();
+
+        // put all into parameter list
+        for (auto&& identifier : identifiers)
+        {
+            parameter_list.push_back(std::make_pair(identifier.lexeme, type));
+        }
+
+    } while (GetCurrTok().type == TokenType::SEMICOLON);
+
+    Eat(TokenType::RIGHT_PAR, "')' expected."); 
+    return parameter_list;
+}
 
 std::unique_ptr<Stmt> Parser::WritelnStatement()
 {

@@ -11,6 +11,18 @@ int main(int argc, char const* argv[])
 		std::string input =
 			"program test; \n"
 			"var i:integer;\n"
+			"function f : integer;\n"
+			"var j,z:boolean;\n"
+			"l:string;\n"
+
+			"function a : integer;\n"
+			"var j,z:boolean;\n"
+			"l:string;\n"
+			"begin\n"
+			"end;\n"
+			"var t : boolean;\n"
+			"begin\n"
+			"end;\n"
 			"begin		 \n"
 			"for i := 0 to 10 do begin if i <> (i div 2)*2 then writeln('i = ',i,' : odd'); end;\n"
 			"end.\n";

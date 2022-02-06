@@ -13,6 +13,7 @@ class CompoundStmt;
 class ProgramStmt;
 class EmptyStmt;
 class VarDeclStmt;
+class FuncDeclStmt;
 class AssignmentStmt;
 class IfStmt;
 class WhileStmt;
@@ -26,6 +27,7 @@ public:
 	virtual void Visit(ProgramStmt& programStmt) = 0;
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
+	virtual void Visit(FuncDeclStmt& funcDeclStmt) = 0;
 	virtual void Visit(AssignmentStmt& varDeclStmt) = 0;
 	virtual void Visit(IfStmt& varDeclStmt) = 0;
 	virtual void Visit(WhileStmt& varDeclStmt) = 0;
@@ -42,12 +44,12 @@ public:
 class ProgramStmt : public Stmt
 {
 public:
-	ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::optional<std::vector<std::unique_ptr<Stmt>>> m_decl_stmts);
+	ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::vector<std::unique_ptr<Stmt>> m_decl_stmts);
 
 	void Accept(VisitorStmt& visitor) override;
 
 	std::string id;
-	std::optional<std::vector<std::unique_ptr<Stmt>>> decl_stmts;
+	std::vector<std::unique_ptr<Stmt>> decl_stmts;
 	std::unique_ptr<Stmt> stmt;
 };
 
@@ -87,6 +89,20 @@ public:
 	void Accept(VisitorStmt& visitor) override;
 
 	std::unordered_map<VariableType, std::vector<Token>> variables;
+};
+
+class FuncDeclStmt : public Stmt
+{
+public:
+	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<std::string, VariableType>> m_parameters);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	std::shared_ptr<Stmt> body;
+	std::vector<std::unique_ptr<Stmt>> decl_stmts;
+	Token id_token;
+	VariableType return_type;
+	std::vector<std::pair<std::string, VariableType>> parameters;
 };
 
 class AssignmentStmt : public Stmt

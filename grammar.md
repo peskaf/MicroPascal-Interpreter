@@ -6,9 +6,9 @@ declaration -> procDecl | funcDecl | varDecl;
 
 varDecl -> "var" (identifierList ":" type ";")+;
 
-funcDecl -> "function" IDENTIFIER parameterList? ":" type ";" declaration* compoundStmt;
+funcDecl -> "function" IDENTIFIER parameterList? ":" type ";" declaration* compoundStmt ";";
 
-procDecl -> "procedure" IDENTIFIER parameterList? ";" declaration* compoundStmt;
+procDecl -> "procedure" IDENTIFIER parameterList? ";" declaration* compoundStmt ";";
 
 parameterList -> "(" (identifierList ":" type (";" identifierList ":" type)*)? ")";
 

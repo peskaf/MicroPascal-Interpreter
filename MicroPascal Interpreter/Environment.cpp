@@ -22,6 +22,7 @@ void Environment::Define(Token name, VariableType type)
 			values[name.lexeme] = "";
 			return;
 		default:
+			Error::ThrowError(name.line_num, "invalid type.");
 			break;
 		}
 	}
@@ -33,6 +34,7 @@ void Environment::Define(Token name, Callable callable)
 	if (values.find(name.lexeme) == values.end()) // it is not there yet
 	{
 		values[name.lexeme] = std::make_shared<Callable>(callable);
+		return;
 	}
 	Error::ThrowError(name.line_num, "duplicate identifier.");
 }
@@ -97,8 +99,8 @@ void Environment::Assign(Token name, Literal value)
 	Error::ThrowError(name.line_num, "identifier not found.");
 }
 
-Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, bool m_is_function)
-	: local_env(std::make_shared<Environment>(parent_env)), body(std::move(m_body)), parameters(m_parameters), is_function(m_is_function) {};
+Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
+	: local_env(std::make_shared<Environment>(parent_env)), body(std::move(m_body)), parameters(m_parameters), return_type(m_return_type) {};
 
 void Callable::PassArguments(std::vector<Literal>)
 {
