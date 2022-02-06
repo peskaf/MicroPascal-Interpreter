@@ -31,6 +31,7 @@ int main(int argc, char const* argv[])
 		o Fnc/proc declaration
 		o Fnc/Proc call
 		o nacteni ze souboru
+		o warningy pryc
 		o code review a dokumentace
 		o cmake
 		*/
