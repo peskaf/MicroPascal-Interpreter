@@ -74,3 +74,19 @@ void FuncDeclStmt::Accept(VisitorStmt& visitor)
 {
 	return visitor.Visit(*this);
 }
+
+ProcDeclStmt::ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters) :
+	id_token(m_id_token), body(std::move(m_body)), decl_stmts(std::move(m_decl_stmts)), parameters(m_parameters) {};
+
+void ProcDeclStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}
+
+ProcedureCallStmt::ProcedureCallStmt(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token) : exprs(std::move(m_exprs)), id_token(m_id_token) {};
+
+
+void ProcedureCallStmt::Accept(VisitorStmt& visitor)
+{
+	return visitor.Visit(*this);
+}

@@ -40,6 +40,10 @@ private:
 
 	void Visit(FuncDeclStmt& funcDeclStmt) override;
 
+	void Visit(ProcDeclStmt& procDeclStmt) override;
+
+	void Visit(ProcedureCallStmt& procCallStmt) override;
+
 	void Visit(AssignmentStmt& assignmentStmt) override;
 
 	void Visit(IfStmt& ifStmt) override;

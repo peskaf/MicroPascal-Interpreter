@@ -189,23 +189,64 @@ void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
 	// define variable that will serve as return (value in it will be returned), id same as func id
 	current_env->Define(funcDeclStmt.id_token, funcDeclStmt.return_type);
 
-	// for debug only (to delete)
-	/*/
-	funcDeclStmt.id_token.Print();
-
-	for (auto&& [var, val]: current_env->values)
-	{
-		std::cout << var << " : " << (val.index() == 0 ? "Literal" : "Callable") << std::endl;
-	}
-	std::cout << "----" << std::endl;
-	/**/
-
 	// make callable
 	auto&& callable = Callable(local_env, std::move(funcDeclStmt.body), funcDeclStmt.parameters, funcDeclStmt.return_type);
 
 	current_env = local_env->enclosing_env;
 	// define func by id in currend env
 	current_env->Define(funcDeclStmt.id_token, callable);
+}
+
+void Interpreter::Visit(ProcDeclStmt& procDeclStmt)
+{
+	// first interpret all declarations
+	std::shared_ptr<Environment> local_env = std::make_shared<Environment>(current_env);
+	current_env = local_env;
+
+	for (auto&& declStmt : procDeclStmt.decl_stmts)
+	{
+		declStmt->Accept(*this);
+	}
+
+	// define parameters variables in local env
+	for (auto&& [var, type] : procDeclStmt.parameters)
+	{
+		current_env->Define(var, type);
+	}
+
+	// make callable
+	auto&& callable = Callable(local_env, std::move(procDeclStmt.body), procDeclStmt.parameters, std::nullopt);
+
+	// back to upper environment
+	current_env = local_env->enclosing_env;
+
+	// define procedure by id in currend env
+	current_env->Define(procDeclStmt.id_token, callable);
+}
+
+void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
+{
+	std::vector<Literal> arguments;
+
+	// evaluate all expressions to literals
+	for (auto&& expr : procCallStmt.exprs)
+	{
+		arguments.push_back(expr->Accept(*this));
+	}
+
+	// pass arguments to callable -> arity, type check and arguments assignment happens over there
+	auto&& callable = current_env->GetCallable(procCallStmt.id_token);
+	callable->PassArguments(arguments, procCallStmt.id_token);
+
+	// move to local env for execution while remembering the previous one
+	auto prev_env = current_env;
+	current_env = callable->local_env;
+
+	// body execution
+	callable->body->Accept(*this);
+
+	// go back to previous environment (caller's one)
+	current_env = prev_env;
 }
 
 void Interpreter::Visit(ProgramStmt& programStmt)

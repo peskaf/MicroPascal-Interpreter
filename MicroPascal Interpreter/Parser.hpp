@@ -58,6 +58,10 @@ private:
 
     std::unique_ptr<Stmt> FuncDecl();
 
+    std::unique_ptr<Stmt> ProcDecl();
+
+    std::unique_ptr<Stmt> ProcStmt();
+
     std::vector<std::unique_ptr<Stmt>> Declarations();
 
     std::vector<std::pair<Token, VariableType>> ParameterList();

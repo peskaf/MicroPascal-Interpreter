@@ -40,7 +40,11 @@ std::unique_ptr<Stmt> Parser::Statement()
     case TokenType::BEGIN:
         return CompoundStatement();
     case TokenType::ID:
-        return AssignmentStatement();
+        if (Peek().type == TokenType::ASSIGN)
+        {
+            return AssignmentStatement();
+        }
+        return ProcStmt();
     case TokenType::IF:
         return IfStatement();
     case TokenType::WHILE:
@@ -152,10 +156,8 @@ std::unique_ptr<Stmt> Parser::Declaration()
         return VarDecl();
     case TokenType::FUNCTION:
         return FuncDecl();
-    /*/
-    case TokenType::PROCEDURE: // TODO: implement
-        return ;
-    /**/
+    case TokenType::PROCEDURE:
+        return ProcDecl();
     default:
         Error::ThrowError(GetCurrTok().line_num, "declaration expected.");
     }
@@ -262,6 +264,55 @@ std::unique_ptr<Stmt> Parser::FuncDecl()
     Eat(TokenType::SEMICOLON, "';' expected.");
 
     return std::make_unique<FuncDeclStmt>(id_token, return_type, std::move(body), std::move(decl_stmts), std::move(parameter_list));
+}
+
+std::unique_ptr<Stmt> Parser::ProcDecl()
+{
+    Eat(TokenType::PROCEDURE, "'procedure' expected.");
+    Token id_token = Eat(TokenType::ID, "identifier expected.");
+    std::vector<std::pair<Token, VariableType>> parameter_list{};
+
+    // is there parameter list?
+    if (GetCurrTok().type == TokenType::LEFT_PAR)
+    {
+        parameter_list = ParameterList();
+    }
+
+    Eat(TokenType::SEMICOLON, "';' expected.");
+
+    // declarations
+    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
+
+    // body
+    std::unique_ptr<Stmt> body = CompoundStatement();
+
+    Eat(TokenType::SEMICOLON, "';' expected.");
+
+    return std::make_unique<ProcDeclStmt>(id_token, std::move(body), std::move(decl_stmts), std::move(parameter_list));
+}
+
+std::unique_ptr<Stmt> Parser::ProcStmt()
+{
+    Token id_token = Eat(TokenType::ID, "identifier expected.");
+    std::vector<std::unique_ptr<Expr>> exprs{};
+
+    // call with arg list
+    if (GetCurrTok().type == TokenType::LEFT_PAR)
+    {
+        Eat(TokenType::LEFT_PAR, "'(' expected.");
+
+        // no expr list (i.e. empty)
+        if (NextMatchWith(std::vector<TokenType>{TokenType::RIGHT_PAR}))
+        {
+            return std::make_unique<ProcedureCallStmt>(std::move(exprs), id_token);
+        }
+
+        exprs = ExprList();
+
+        Eat(TokenType::RIGHT_PAR, "')' expected.");
+    }
+
+    return std::make_unique<ProcedureCallStmt>(std::move(exprs), id_token);
 }
 
 std::vector<std::unique_ptr<Stmt>> Parser::Declarations()

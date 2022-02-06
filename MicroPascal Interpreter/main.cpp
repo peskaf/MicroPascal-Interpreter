@@ -10,41 +10,27 @@ int main(int argc, char const* argv[])
 	{
 		std::string input =
 			"program test; \n"
-				"var i:integer;\n"
-
-				"function p:integer;\n"
-					"begin;\n"
-					"p := 2;\n"
-					"end;\n"
-
-				"function f : integer;\n"
-					"var j,z:boolean;\n"
-					"l:string;\n"
-
-					"function a : integer;\n"
-						"var j,z:integer;\n"
-						"l:string;\n"
-
-						"function q : integer;\n"
-						"var z : integer;\n"
-						"begin\n"
-							"z := 999; \n"
-						"end;\n"
-
-						"begin\n"
-							"z := 44;\n"
-							"a := p() + z + 88 + q();\n"
-						"end;\n"
-
-					"var t : boolean;\n"
-
-				"begin\n"
-					"f := 8 + a();\n"
-				"end;\n"
-
-			"begin		 \n"
-				"i := f(); \n"
-				"writeln(i);\n"
+			"procedure q(a : integer);\n"
+			"var i:integer;\n"
+			"begin\n"
+			"for i:=1 to a do\n"
+			"begin\n"
+			"p(1);\n"
+			"writeln('b');\n"
+			"end;\n"
+			"end;\n"
+			"procedure p(a : integer);\n"
+			"var i:integer;\n"
+			"begin\n"
+			"for i:=1 to a do\n"
+			"begin\n"
+			"q(1);\n"
+			"writeln('a');\n"
+			"end;\n"
+			"end;\n"
+			"begin\n"
+			"p(5);\n"
+			"q(10);\n"
 			"end.\n";
 
 		Lexer lex(input);

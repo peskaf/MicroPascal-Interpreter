@@ -18,6 +18,8 @@ class AssignmentStmt;
 class IfStmt;
 class WhileStmt;
 class ForStmt;
+class ProcDeclStmt;
+class ProcedureCallStmt;
 
 class VisitorStmt
 {
@@ -28,10 +30,12 @@ public:
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
 	virtual void Visit(FuncDeclStmt& funcDeclStmt) = 0;
-	virtual void Visit(AssignmentStmt& varDeclStmt) = 0;
-	virtual void Visit(IfStmt& varDeclStmt) = 0;
-	virtual void Visit(WhileStmt& varDeclStmt) = 0;
-	virtual void Visit(ForStmt& varDeclStmt) = 0;
+	virtual void Visit(AssignmentStmt& assignmentStmt) = 0;
+	virtual void Visit(IfStmt& ifStmt) = 0;
+	virtual void Visit(WhileStmt& whileStmt) = 0;
+	virtual void Visit(ForStmt& forStmt) = 0;
+	virtual void Visit(ProcDeclStmt& procDeclStmt) = 0;
+	virtual void Visit(ProcedureCallStmt& procedureCallStmt) = 0;
 };
 
 class Stmt
@@ -104,6 +108,33 @@ public:
 	VariableType return_type;
 	std::vector<std::pair<Token, VariableType>> parameters;
 };
+
+
+class ProcDeclStmt : public Stmt
+{
+public:
+	ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	std::shared_ptr<Stmt> body;
+	std::vector<std::unique_ptr<Stmt>> decl_stmts;
+	Token id_token;
+	std::vector<std::pair<Token, VariableType>> parameters;
+};
+
+class ProcedureCallStmt : public Stmt
+{
+public:
+	ProcedureCallStmt(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	Token id_token;
+	std::vector<std::unique_ptr<Expr>> exprs; // arguments
+};
+
+
 
 class AssignmentStmt : public Stmt
 {
