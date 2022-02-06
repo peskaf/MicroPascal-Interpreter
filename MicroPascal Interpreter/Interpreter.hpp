@@ -61,7 +61,14 @@ private:
 	std::string LitToString(Literal& lit);
 
 	std::shared_ptr<Environment> global_env;
+
 	std::shared_ptr<Environment> current_env;
+
+	int stack_count = 0;
+
+	const int max_stack_count = 256;
+
+	void CheckStackOverflow();
 };
 
 #endif // !INTERPRETER_HPP

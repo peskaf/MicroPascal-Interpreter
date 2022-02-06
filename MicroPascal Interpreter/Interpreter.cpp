@@ -144,6 +144,9 @@ void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
 
 Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 {
+	stack_count++;
+	CheckStackOverflow();
+
 	std::vector<Literal> arguments;
 
 	// evaluate all expressions to literals
@@ -167,6 +170,7 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 	current_env = prev_env;
 
 	// return 
+	stack_count--;
 	return callable->local_env->GetLiteral(funcCallExpr.id_token);
 }
 
@@ -226,6 +230,9 @@ void Interpreter::Visit(ProcDeclStmt& procDeclStmt)
 
 void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 {
+	stack_count++;
+	CheckStackOverflow();
+
 	std::vector<Literal> arguments;
 
 	// evaluate all expressions to literals
@@ -247,6 +254,7 @@ void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 
 	// go back to previous environment (caller's one)
 	current_env = prev_env;
+	stack_count--;
 }
 
 void Interpreter::Visit(ProgramStmt& programStmt)
@@ -379,4 +387,12 @@ std::string Interpreter::LitToString(Literal& lit)
 
 	// should be unreachable -> will delete nullptr in literal variant
 	Error::ThrowError(0, "invalid literal value."); // TODO: jeste poresit
+}
+
+void Interpreter::CheckStackOverflow()
+{
+	if (stack_count > max_stack_count)
+	{
+		Error::ThrowError(0, "stack overflow.");
+	}
 }
