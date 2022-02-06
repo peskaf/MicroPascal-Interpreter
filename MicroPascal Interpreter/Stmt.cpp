@@ -28,7 +28,7 @@ void EmptyStmt::Accept(VisitorStmt& visitor)
 	return visitor.Visit(*this);
 }
 
-VarDeclStmt::VarDeclStmt(std::unordered_map<int, std::vector<Token>> m_variables) : variables(m_variables) {};
+VarDeclStmt::VarDeclStmt(std::unordered_map<VariableType, std::vector<Token>> m_variables) : variables(m_variables) {};
 
 void VarDeclStmt::Accept(VisitorStmt& visitor)
 {

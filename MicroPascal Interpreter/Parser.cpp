@@ -165,12 +165,23 @@ std::unique_ptr<Stmt> Parser::Declaration()
     }
 }
 
+std::vector<Token> Parser::IdentifierList()
+{
+    std::vector<Token> tokens;
+    tokens.push_back(Eat(TokenType::ID, "identifier expected."));
+    while (NextMatchWith(std::vector<TokenType>{TokenType::COMMA}))
+    {
+        tokens.push_back(Eat(TokenType::ID, "identifier expected."));
+    }
+    return tokens;
+}
+
 std::unique_ptr<Stmt> Parser::VarDecl()
 {
     Eat(TokenType::VAR, "'var' expected.");
-    std::unordered_map<int, std::vector<Token>> variables;
+    std::unordered_map<VariableType, std::vector<Token>> variables;
     
-    int type_id = 0;
+    VariableType type;
 
     if (GetCurrTok().type != TokenType::ID)
     {
@@ -179,42 +190,38 @@ std::unique_ptr<Stmt> Parser::VarDecl()
 
     while (GetCurrTok().type == TokenType::ID)
     {
-        std::vector<Token> tokens; // make super tokens vector is empty
-        tokens.push_back(Eat(TokenType::ID, "identifier expected."));
-        while (NextMatchWith(std::vector<TokenType>{TokenType::COMMA}))
-        {
-            tokens.push_back(Eat(TokenType::ID, "identifier expected."));
-        }
-        Eat(TokenType::COLON, "':' expected.");
+        std::vector<Token> tokens = IdentifierList();
 
+        Eat(TokenType::COLON, "':' expected.");
         switch (GetCurrTok().type)
         {
-        case TokenType::INTEGER_TYPE: // 1
-            type_id = 1;
+        case TokenType::INTEGER_TYPE:
+            type = VariableType::INTEGER;
             break;
-        case TokenType::BOOL_TYPE: // 2
-            type_id = 2;
+        case TokenType::BOOL_TYPE:
+            type = VariableType::BOOL;
             break;
-        case TokenType::STRING_TYPE: // 3
-            type_id = 3;
+        case TokenType::STRING_TYPE:
+            type = VariableType::STRING;
             break;
         default:
             Error::ThrowError(GetCurrTok().line_num, "invalid variable type.");
         }
         Advance();
 
-        if (variables.find(type_id) != variables.end()) // type_id is already there
+        if (variables.find(type) != variables.end()) // type_id is already there
         {
-            variables[type_id].insert(variables[type_id].end(), tokens.begin(), tokens.end()); // add variables to the same type key
+            variables[type].insert(variables[type].end(), tokens.begin(), tokens.end()); // add variables to the same type key
         }
         else // type_id denotes a new type
         {
-            variables[type_id] = tokens;
+            variables[type] = tokens;
         }
         Eat(TokenType::SEMICOLON, "';' expected.");
     }
     return std::make_unique<VarDeclStmt>(variables);
 }
+
 
 std::unique_ptr<Stmt> Parser::WritelnStatement()
 {

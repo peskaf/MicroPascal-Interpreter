@@ -11,6 +11,8 @@
 class Interpreter : public VisitorExpr, public VisitorStmt
 {
 public:
+	Interpreter();
+
 	void Interpret(std::unique_ptr<Stmt> stmt);
 
 private:

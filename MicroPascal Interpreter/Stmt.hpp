@@ -82,11 +82,11 @@ public:
 class VarDeclStmt : public Stmt
 {
 public:
-	VarDeclStmt(std::unordered_map<int, std::vector<Token>> m_variables);
+	VarDeclStmt(std::unordered_map<VariableType, std::vector<Token>> m_variables);
 
 	void Accept(VisitorStmt& visitor) override;
 
-	std::unordered_map<int, std::vector<Token>> variables;
+	std::unordered_map<VariableType, std::vector<Token>> variables;
 };
 
 class AssignmentStmt : public Stmt

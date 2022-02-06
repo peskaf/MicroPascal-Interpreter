@@ -54,6 +54,8 @@ private:
 
     std::unique_ptr<Stmt> Program();
 
+    std::vector<Token> IdentifierList();
+
     std::unique_ptr<Stmt> EmptyStatement();
 
     std::unique_ptr<Stmt> AssignmentStatement();

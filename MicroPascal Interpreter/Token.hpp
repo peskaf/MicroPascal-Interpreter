@@ -7,7 +7,14 @@
 #include "TokenType.hpp"
 
 
-using Literal = std::variant<std::nullptr_t, int, bool, std::string>; // value types that can occur (input or evaluation), delete nullptr?
+using Literal = std::variant<std::nullptr_t, int, bool, std::string>;
+
+enum class VariableType
+{
+	INTEGER,
+	BOOL,
+	STRING
+};
 
 class Token
 {

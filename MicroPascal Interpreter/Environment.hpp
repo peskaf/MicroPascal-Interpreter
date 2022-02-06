@@ -11,12 +11,16 @@
 class Environment
 {
 public:
-	void Define(Token name, int type_id);
+	Environment();
+	Environment(std::unique_ptr<Environment> m_enclosing_env);
+
+	void Define(Token name, VariableType type);
 	Literal Get(Token name);
 	void Assign(Token name, Literal value);
 
 private:
 	std::map<std::string, Literal> values;
+	std::unique_ptr<Environment> enclosing_env;
 };
 
 

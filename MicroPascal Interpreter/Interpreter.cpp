@@ -3,6 +3,8 @@
 #include "Interpreter.hpp"
 #include "Error.hpp"
 
+Interpreter::Interpreter() : env(Environment()) {};
+
 Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
 	Literal left_value = binExpr.left->Accept(*this);
@@ -119,11 +121,11 @@ void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
 
 void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
 {
-	for (auto&& [type_id, tok_vec] : varDeclStmt.variables)
+	for (auto&& [type, tok_vec] : varDeclStmt.variables)
 	{
 		for (auto&& tok : tok_vec)
 		{
-			env.Define(tok, type_id);
+			env.Define(tok, type);
 		}
 	}
 }

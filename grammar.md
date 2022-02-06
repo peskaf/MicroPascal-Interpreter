@@ -4,7 +4,7 @@ program -> "program" IDENTIFIER ";" declaration* compoundStmt "." EOF;
 
 declaration -> procDecl | funcDecl | varDecl;
 
-varDecl -> "var" (IDENTIFIER ("," IDENTIFIER)* ":" type ";")+;
+varDecl -> "var" (identifierList ":" type ";")+;
 
 funcDecl -> "function" IDENTIFIER parameterList? ":" type ";" declaration* compoundStmt;
 
@@ -17,8 +17,6 @@ identifierList -> IDENTIFIER ("," IDENTIFIER)*;
 statementList -> statement (";" statement)*;
 
 statement -> writelnStmt | procedureStmt | compoundStmt | ifStmt | forStmt | whileStmt | assignStmt | emptyStmt;
-
-functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
 procedureStmt -> IDENTIFIER ("(" exprList ")")?;
 
@@ -34,6 +32,8 @@ assignStmt -> IDENTIFIER ":=" expression;
 
 compoundStmt -> "begin" statementList "end";
 
+emptyStmt -> ε;
+
 exprList -> expression ("," expression)*;
 
 expression -> simpleExpr ((">=" | "<=" | "<>" | "=" | ">" | "<") simpleExpr)?;
@@ -44,6 +44,6 @@ term -> factor (("*" | "div" | "and") factor)*;
 
 factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | IDENTIFIER;
 
-emptyStmt -> ε;
+functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
-type -> "integer" | "string" | "boolean" | "char";
+type -> "integer" | "string" | "boolean";

@@ -12,12 +12,14 @@ int main(int argc, char const* argv[])
 			"program test; \n"
 			"var i:integer;\n"
 			"begin		 \n"
-			"for i := 1 downto i-2 do writeln(i);\n"
+			"for i := 0 to 10 do begin if i <> (i div 2)*2 then writeln('i = ',i,' : odd'); end;\n"
 			"end.\n";
 
 		Lexer lex(input);
+		
 		std::vector<Token> tokens = lex.GetTokens();
-		/*/
+		std::cout << "here" << std::endl;
+		/**/
 		for (auto&& tok : tokens)
 		{
 			tok.Print();
@@ -25,14 +27,14 @@ int main(int argc, char const* argv[])
 		/**/
 
 		/*
-		TODO:
-		o Variable assignment
-		o Flow control
+		TODO:	
 		o Fnc/proc declaration
 		o Fnc/Proc call
-		o ENDE!!!!!!!!!!!
+		o nacteni ze souboru
+		o code review a dokumentace
+		o cmake
 		*/
-
+		std::cout << "here" << std::endl;
 		Parser par(tokens);
 		Interpreter interpreter;
 

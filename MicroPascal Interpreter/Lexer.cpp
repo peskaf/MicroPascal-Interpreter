@@ -185,7 +185,7 @@ void Lexer::Identifier()
             AddToken(TokenType::TRUE, true);
             return;
         }
-            
+
         if (lit_value == "false")
         {
             AddToken(TokenType::FALSE, false);
@@ -222,7 +222,7 @@ void Lexer::AddToken(TokenType type)
 }
 
 void Lexer::AddToken(TokenType type, Literal lit)
-{   
+{
     Advance();
     std::string lexeme = input.substr(start_pos, curr_pos - start_pos);
     if (type == TokenType::ID)
@@ -231,7 +231,7 @@ void Lexer::AddToken(TokenType type, Literal lit)
         std::transform(lexeme.begin(), lexeme.end(), lexeme.begin(),
             [](unsigned char c) { return std::tolower(c); });
     }
-        
+
     tokens.push_back(Token(type, lexeme, lit, line_num));
 }
 
