@@ -4,9 +4,14 @@
 #include <map>
 #include <string>
 #include <typeindex>
+#include <variant>
+#include <memory>
+#include <vector>
 
-
+#include "Stmt.hpp"
 #include "Token.hpp"
+
+class Callable;
 
 class Environment
 {
@@ -15,12 +20,30 @@ public:
 	Environment(std::shared_ptr<Environment> m_enclosing_env);
 
 	void Define(Token name, VariableType type);
-	Literal Get(Token name);
+	void Define(Token name, Callable callable);
+	std::variant<Literal, std::shared_ptr<Callable>> Get(Token name);
+	Literal GetLiteral(Token name);
+	std::shared_ptr<Callable> GetCallable(Token name);
 	void Assign(Token name, Literal value);
 
 private:
-	std::map<std::string, Literal> values;
+	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values;
 	std::shared_ptr<Environment> enclosing_env;
+};
+
+
+class Callable {
+public:
+	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, bool m_is_function);
+	void PassArguments(std::vector<Literal>);
+
+	std::shared_ptr<Environment> local_env;
+	std::shared_ptr<Stmt> body;
+	bool is_function;
+
+private:
+
+	std::vector<std::pair<std::string, VariableType>> parameters;
 };
 
 

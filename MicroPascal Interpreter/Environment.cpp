@@ -28,7 +28,16 @@ void Environment::Define(Token name, VariableType type)
 	Error::ThrowError(name.line_num, "duplicate identifier.");
 }
 
-Literal Environment::Get(Token name)
+void Environment::Define(Token name, Callable callable)
+{
+	if (values.find(name.lexeme) == values.end()) // it is not there yet
+	{
+		values[name.lexeme] = std::make_shared<Callable>(callable);
+	}
+	Error::ThrowError(name.line_num, "duplicate identifier.");
+}
+
+std::variant<Literal, std::shared_ptr<Callable>> Environment::Get(Token name)
 {
 	// look for variable in current scope
 	if (values.find(name.lexeme) != values.end()) // name exists in current env
@@ -45,12 +54,32 @@ Literal Environment::Get(Token name)
 	Error::ThrowError(name.line_num, "identifier not found.");
 }
 
+Literal Environment::GetLiteral(Token name)
+{
+	auto&& value = Get(name);
+	if (value.index() == 0) // literal
+	{
+		return std::get<Literal>(value);
+	}
+	Error::ThrowError(name.line_num, "literal expected.");
+}
+
+std::shared_ptr<Callable> Environment::GetCallable(Token name)
+{
+	auto&& value = Get(name);
+	if (value.index() == 1) // callable
+	{
+		return std::get<std::shared_ptr<Callable>>(value);
+	}
+	Error::ThrowError(name.line_num, "callable expected.");
+}
+
 void Environment::Assign(Token name, Literal value)
 {
 	// try to assign in current env
 	if (values.find(name.lexeme) != values.end()) // name exists in current env
 	{
-		if (values[name.lexeme].index() == value.index()) // types have to be the same
+		if (GetLiteral(name).index() == value.index()) // types have to be the same
 		{
 			values[name.lexeme] = value;
 			return;
@@ -66,4 +95,12 @@ void Environment::Assign(Token name, Literal value)
 	}
 
 	Error::ThrowError(name.line_num, "identifier not found.");
+}
+
+Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, bool m_is_function)
+	: local_env(std::make_shared<Environment>(parent_env)), body(std::move(m_body)), parameters(m_parameters), is_function(m_is_function) {};
+
+void Callable::PassArguments(std::vector<Literal>)
+{
+
 }

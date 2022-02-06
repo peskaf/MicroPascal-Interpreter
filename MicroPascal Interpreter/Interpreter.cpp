@@ -97,7 +97,7 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 
 Literal Interpreter::Visit(VariableExpr& varExpr)
 {
-	return current_env->Get(varExpr.token);
+	return current_env->GetLiteral(varExpr.token);
 }
 
 void Interpreter::Visit(WritelnStmt& writelnStmt)
@@ -199,25 +199,25 @@ void Interpreter::Visit(ForStmt& forStmt)
 
 	forStmt.assignment->Accept(*this); // assign init value of iterator variable
 
-	Literal initial_value = current_env->Get(forStmt.id_token);
+	Literal initial_value = current_env->GetLiteral(forStmt.id_token);
 
 	if (IsInt(expression_value) && IsInt(initial_value))
 	{
 		if (forStmt.increment)
 		{
-			while (std::get<int>(current_env->Get(forStmt.id_token)) <= std::get<int>(expression_value))
+			while (std::get<int>(current_env->GetLiteral(forStmt.id_token)) <= std::get<int>(expression_value))
 			{
 				forStmt.body->Accept(*this);
-				current_env->Assign(forStmt.id_token, std::get<int>(current_env->Get(forStmt.id_token)) + 1);
+				current_env->Assign(forStmt.id_token, std::get<int>(current_env->GetLiteral(forStmt.id_token)) + 1);
 			}
 			return;
 		}
 		else // decrement
 		{
-			while (std::get<int>(current_env->Get(forStmt.id_token)) >= std::get<int>(expression_value))
+			while (std::get<int>(current_env->GetLiteral(forStmt.id_token)) >= std::get<int>(expression_value))
 			{
 				forStmt.body->Accept(*this);
-				current_env->Assign(forStmt.id_token, std::get<int>(current_env->Get(forStmt.id_token)) - 1);
+				current_env->Assign(forStmt.id_token, std::get<int>(current_env->GetLiteral(forStmt.id_token)) - 1);
 			}
 			return;
 		}
