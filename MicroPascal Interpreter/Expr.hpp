@@ -2,14 +2,17 @@
 #define EXPR_HPP
 
 #include <memory>
+#include <vector>
 
 #include "Token.hpp"
+
 
 class BinaryExpr;
 class UnaryExpr;
 class LiteralExpr;
 class GroupingExpr;
 class VariableExpr;
+class FunctionCallExpr;
 
 class VisitorExpr
 {
@@ -19,6 +22,7 @@ public:
 	virtual Literal Visit(LiteralExpr& litExpr) = 0;
 	virtual Literal Visit(GroupingExpr& grExpr) = 0;
 	virtual Literal Visit(VariableExpr& varExpr) = 0;
+	virtual Literal Visit(FunctionCallExpr& funcCallExpr) = 0;
 };
 
 class Expr
@@ -79,6 +83,18 @@ public:
 	Literal Accept(VisitorExpr& visitor) override;
 
 	Token token;
+};
+
+class FunctionCallExpr : public Expr
+{
+public:
+	FunctionCallExpr(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token);
+
+	Literal Accept(VisitorExpr& visitor) override;
+
+	Token id_token;
+	std::vector<std::unique_ptr<Expr>> exprs;
+
 };
 
 #endif // !EXPR_HPP

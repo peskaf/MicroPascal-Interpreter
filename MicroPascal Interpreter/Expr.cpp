@@ -33,9 +33,19 @@ Literal GroupingExpr::Accept(VisitorExpr& visitor)
 	return visitor.Visit(*this);
 };
 
+
 VariableExpr::VariableExpr(Token m_token) : token(m_token) {};
 
 Literal VariableExpr::Accept(VisitorExpr& visitor)
+{
+	return visitor.Visit(*this);
+}
+
+
+FunctionCallExpr::FunctionCallExpr(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token) :
+	exprs(std::move(m_exprs)), id_token(m_id_token) {};
+
+Literal FunctionCallExpr::Accept(VisitorExpr& visitor)
 {
 	return visitor.Visit(*this);
 }

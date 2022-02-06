@@ -26,6 +26,8 @@ private:
 	
 	Literal Visit(VariableExpr& varExpr) override;
 
+	Literal Visit(FunctionCallExpr& funcCallExpr) override;
+
 	void Visit(WritelnStmt& writelnStmt) override;
 
 	void Visit(CompoundStmt& compoundStmt) override;

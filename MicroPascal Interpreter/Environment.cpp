@@ -19,7 +19,7 @@ void Environment::Define(Token name, VariableType type)
 			values[name.lexeme] = false;
 			return;
 		case VariableType::STRING:
-			values[name.lexeme] = "";
+			values[name.lexeme] = std::string();
 			return;
 		default:
 			Error::ThrowError(name.line_num, "invalid type.");
@@ -99,10 +99,32 @@ void Environment::Assign(Token name, Literal value)
 	Error::ThrowError(name.line_num, "identifier not found.");
 }
 
-Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
+Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
 	: local_env(std::make_shared<Environment>(parent_env)), body(std::move(m_body)), parameters(m_parameters), return_type(m_return_type) {};
 
-void Callable::PassArguments(std::vector<Literal>)
+void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 {
+	// arity check
+	if (arguments.size() != parameters.size()) // different number of args
+	{
+		Error::ThrowError(callee.line_num, "invalid number of arguments.");
+		return;
+	}
 
+	// type check
+	for (size_t i = 0; i < arguments.size(); i++)
+	{
+		if (arguments[i].index() == 1 && parameters[i].second != VariableType::INTEGER ||
+			arguments[i].index() == 2 && parameters[i].second != VariableType::BOOL ||
+			arguments[i].index() == 3 && parameters[i].second != VariableType::STRING) // types does not match
+		{
+			Error::ThrowError(callee.line_num, "incompatible type for argument.");
+		}
+	}
+
+	// assign values to variables in local env
+	for (size_t i = 0; i < arguments.size(); i++)
+	{	
+		local_env->Assign(parameters[i].first, arguments[i]);
+	}
 }

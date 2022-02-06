@@ -6,7 +6,6 @@
 
 #include "TokenType.hpp"
 
-
 using Literal = std::variant<std::nullptr_t, int, bool, std::string>;
 
 enum class VariableType

@@ -22,6 +22,8 @@ private:
 
     Token GetPrevious();
 
+    Token Peek();
+
     void Advance();
 
     bool Check(TokenType token_type);
@@ -33,6 +35,10 @@ private:
     Token Eat(TokenType expected_type, std::string error_message);
 
     std::unique_ptr<Expr> Expression();
+
+    std::unique_ptr<Expr> FuncExpr();
+
+    std::vector<std::unique_ptr<Expr>> ExprList();
 
     std::unique_ptr<Expr> SimpleExpr();
 
@@ -54,7 +60,7 @@ private:
 
     std::vector<std::unique_ptr<Stmt>> Declarations();
 
-    std::vector<std::pair<std::string, VariableType>> ParameterList();
+    std::vector<std::pair<Token, VariableType>> ParameterList();
 
     std::unique_ptr<Stmt> WritelnStatement();
 

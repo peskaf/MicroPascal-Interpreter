@@ -222,7 +222,7 @@ std::unique_ptr<Stmt> Parser::FuncDecl()
 {
     Eat(TokenType::FUNCTION, "'function' expected.");
     Token id_token = Eat(TokenType::ID, "identifier expected.");
-    std::vector<std::pair<std::string, VariableType>> parameter_list{};
+    std::vector<std::pair<Token, VariableType>> parameter_list{};
 
     // is there parameter list?
     if (GetCurrTok().type == TokenType::LEFT_PAR)
@@ -274,7 +274,7 @@ std::vector<std::unique_ptr<Stmt>> Parser::Declarations()
     return decl_stmts;
 }
 
-std::vector<std::pair<std::string, VariableType>> Parser::ParameterList()
+std::vector<std::pair<Token, VariableType>> Parser::ParameterList()
 {
     Eat(TokenType::LEFT_PAR, "'(' expected.");
     
@@ -286,7 +286,7 @@ std::vector<std::pair<std::string, VariableType>> Parser::ParameterList()
     }
 
     std::vector<Token> identifiers;
-    std::vector<std::pair<std::string, VariableType>> parameter_list{};
+    std::vector<std::pair<Token, VariableType>> parameter_list{};
 
     do
     {
@@ -316,10 +316,10 @@ std::vector<std::pair<std::string, VariableType>> Parser::ParameterList()
         // put all into parameter list
         for (auto&& identifier : identifiers)
         {
-            parameter_list.push_back(std::make_pair(identifier.lexeme, type));
+            parameter_list.push_back(std::make_pair(identifier, type));
         }
 
-    } while (GetCurrTok().type == TokenType::SEMICOLON);
+    } while (NextMatchWith(std::vector<TokenType>{TokenType::SEMICOLON}));
 
     Eat(TokenType::RIGHT_PAR, "')' expected."); 
     return parameter_list;
@@ -330,25 +330,33 @@ std::unique_ptr<Stmt> Parser::WritelnStatement()
     Eat(TokenType::WRITELN, "'writeln' expected.");
     Eat(TokenType::LEFT_PAR, "'(' expected.");
 
+    std::vector<std::unique_ptr<Expr>> exprs{};
+
+    // no expr list (i.e. empty)
     if (NextMatchWith(std::vector<TokenType>{TokenType::RIGHT_PAR}))
     {
-        return std::make_unique<WritelnStmt>(std::nullopt);
+        return std::make_unique<WritelnStmt>(std::move(exprs));
     }
 
-    std::vector<std::unique_ptr<Expr>> exprs;
-
-    exprs.push_back(Expression());
-
-    while (GetCurrTok().type != TokenType::RIGHT_PAR)
-    {
-        Eat(TokenType::COMMA, "',' expected,");
-        exprs.push_back(Expression());
-    }
+    exprs = ExprList();
 
     Eat(TokenType::RIGHT_PAR, "')' expected.");
     return std::make_unique<WritelnStmt>(std::move(exprs));
 }
 
+std::vector<std::unique_ptr<Expr>> Parser::ExprList()
+{
+    std::vector<std::unique_ptr<Expr>> exprs;
+
+    exprs.push_back(Expression());
+
+    while (GetCurrTok().type == TokenType::COMMA)
+    {
+        Eat(TokenType::COMMA, "',' expected,");
+        exprs.push_back(Expression());
+    }
+    return exprs;
+}
 
 Token Parser::GetCurrTok()
 {
@@ -471,19 +479,34 @@ std::unique_ptr<Expr> Parser::Term()
     return factor;
 }
 
-// Factor -> ("+" | "-" | "not") Factor | FunctionExpr | INTEGER | "true" | "false" | STRING | "(" Expression ")" | IDENTIFIER
+std::unique_ptr<Expr> Parser::FuncExpr()
+{
+    Token id_token = Eat(TokenType::ID, "identifier expected.");
+    std::vector<std::unique_ptr<Expr>> exprs{};
+
+    Eat(TokenType::LEFT_PAR, "'(' expected.");
+
+    // no expr list (i.e. empty)
+    if (NextMatchWith(std::vector<TokenType>{TokenType::RIGHT_PAR}))
+    {
+        return std::make_unique<FunctionCallExpr>(std::move(exprs), id_token);
+    }
+
+    exprs = ExprList();
+
+    Eat(TokenType::RIGHT_PAR, "')' expected.");
+
+    return std::make_unique<FunctionCallExpr>(std::move(exprs), id_token);
+}
+
+
+// Factor -> ("+" | "-" | "not") Factor | FuncExpr | INTEGER | "true" | "false" | STRING | "(" Expression ")" | IDENTIFIER
 std::unique_ptr<Expr> Parser::Factor()
 {
-    const std::vector<TokenType> unary_operators
+    // TODO: predelat CELE na nejake smysluplne metody pro check jestli currtok ma nejaky typ nebo nejaky z typu
+    if (GetCurrTok().type == TokenType::PLUS || GetCurrTok().type == TokenType::MINUS || GetCurrTok().type == TokenType::NOT)
     {
-        TokenType::PLUS,
-        TokenType::MINUS,
-        TokenType::NOT
-    };
-
-    if (NextMatchWith(unary_operators))
-    {
-        Token op = GetPrevious();
+        Token op = Eat(GetCurrTok().type, "unary operator expected."); // will not throw
         std::unique_ptr<Expr> fact = Factor();
         return std::make_unique<UnaryExpr>(std::move(fact), op);
     }
@@ -500,10 +523,24 @@ std::unique_ptr<Expr> Parser::Factor()
         return std::make_unique<GroupingExpr>(std::move(expr));
     }
 
-    if (NextMatchWith(std::vector<TokenType>{TokenType::ID}))
+    if (GetCurrTok().type == TokenType::ID)
     {
-        return std::make_unique<VariableExpr>(std::move(GetPrevious()));
+        if (Peek().type == TokenType::LEFT_PAR) // function call
+        {
+            return FuncExpr();
+        }
+
+        return std::make_unique<VariableExpr>(Eat(TokenType::ID, "identifier expected."));
     }
 
     Error::ThrowError(GetCurrTok().line_num, "expression expected.");
+}
+
+Token Parser::Peek()
+{
+    if (!IsAtEnd())
+    {
+        return tokens[curr_tok_num + 1];
+    }
+    return GetCurrTok();
 }

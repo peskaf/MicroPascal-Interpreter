@@ -15,7 +15,7 @@ void CompoundStmt::Accept(VisitorStmt& visitor)
 	return visitor.Visit(*this);
 }
 
-WritelnStmt::WritelnStmt(std::optional<std::vector<std::unique_ptr<Expr>>> m_exprs) : exprs(std::move(m_exprs)) {};
+WritelnStmt::WritelnStmt(std::vector<std::unique_ptr<Expr>> m_exprs) : exprs(std::move(m_exprs)) {};
 
 void WritelnStmt::Accept(VisitorStmt& visitor)
 {
@@ -67,8 +67,8 @@ void ForStmt::Accept(VisitorStmt& visitor)
 	return visitor.Visit(*this);
 }
 
-FuncDeclStmt::FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<std::string, VariableType>> m_parameters)
-	: id_token(m_id_token), return_type(m_return_type), body(std::move(m_body)), decl_stmts(std::move(m_decl_stmts)), parameters(m_parameters) {};
+FuncDeclStmt::FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters) : 
+	id_token(m_id_token), return_type(m_return_type), body(std::move(m_body)), decl_stmts(std::move(m_decl_stmts)), parameters(m_parameters) {};
 
 void FuncDeclStmt::Accept(VisitorStmt& visitor)
 {

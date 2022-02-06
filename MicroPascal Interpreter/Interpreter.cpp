@@ -97,18 +97,30 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 
 Literal Interpreter::Visit(VariableExpr& varExpr)
 {
+	// function without parameters
+	if (current_env->Get(varExpr.token).index() == 1) 
+	{
+		auto&& callable = current_env->GetCallable(varExpr.token);
+
+		// move to local env for execution while remembering the previous one
+		auto prev_env = current_env;
+		current_env = callable->local_env;
+
+		// body execution
+		callable->body->Accept(*this);
+
+		// go back to previous environment (caller's one)
+		current_env = prev_env;
+
+		return callable->local_env->GetLiteral(varExpr.token);
+	}
+	// literal
 	return current_env->GetLiteral(varExpr.token);
 }
 
 void Interpreter::Visit(WritelnStmt& writelnStmt)
 {
-	if (!writelnStmt.exprs.has_value()) // empty -> writeln()
-	{
-		std::cout << std::endl;
-		return;
-	}
-
-	for (auto&& expr : writelnStmt.exprs.value()) // evaluate all expressions inside writeln stmt
+	for (auto&& expr : writelnStmt.exprs) // evaluate all expressions inside writeln stmt
 	{
 		Literal to_print = expr->Accept(*this);
 		std::cout << LitToString(to_print);
@@ -130,6 +142,34 @@ void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
 	}
 }
 
+Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
+{
+	std::vector<Literal> arguments;
+
+	// evaluate all expressions to literals
+	for (auto&& expr : funcCallExpr.exprs)
+	{
+		arguments.push_back(expr->Accept(*this));
+	}
+
+	// pass arguments to callable -> arity, type check and arguments assignment happens over there
+	auto&& callable = current_env->GetCallable(funcCallExpr.id_token);
+	callable->PassArguments(arguments, funcCallExpr.id_token);
+
+	// move to local env for execution while remembering the previous one
+	auto prev_env = current_env;
+	current_env = callable->local_env;
+
+	// body execution
+	callable->body->Accept(*this);
+
+	// go back to previous environment (caller's one)
+	current_env = prev_env;
+
+	// return 
+	return callable->local_env->GetLiteral(funcCallExpr.id_token);
+}
+
 void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
 {
 	// first interpret all declarations
@@ -140,20 +180,25 @@ void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
 	{
 		declStmt->Accept(*this);
 	}
-	
+	// define parameters variables in local env
+	for (auto&& [var, type] : funcDeclStmt.parameters)
+	{
+		current_env->Define(var, type);
+	}
+
 	// define variable that will serve as return (value in it will be returned), id same as func id
 	current_env->Define(funcDeclStmt.id_token, funcDeclStmt.return_type);
 
-
-
+	// for debug only (to delete)
+	/*/
 	funcDeclStmt.id_token.Print();
-	// to del
+
 	for (auto&& [var, val]: current_env->values)
 	{
 		std::cout << var << " : " << (val.index() == 0 ? "Literal" : "Callable") << std::endl;
 	}
 	std::cout << "----" << std::endl;
-
+	/**/
 
 	// make callable
 	auto&& callable = Callable(local_env, std::move(funcDeclStmt.body), funcDeclStmt.parameters, funcDeclStmt.return_type);

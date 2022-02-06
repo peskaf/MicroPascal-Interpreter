@@ -56,11 +56,11 @@ public:
 class WritelnStmt : public Stmt
 {
 public:
-	WritelnStmt(std::optional<std::vector<std::unique_ptr<Expr>>> m_exprs);
+	WritelnStmt(std::vector<std::unique_ptr<Expr>> m_exprs);
 
 	void Accept(VisitorStmt& visitor) override;
 
-	std::optional<std::vector<std::unique_ptr<Expr>>> exprs;
+	std::vector<std::unique_ptr<Expr>> exprs;
 };
 
 class CompoundStmt : public Stmt
@@ -94,7 +94,7 @@ public:
 class FuncDeclStmt : public Stmt
 {
 public:
-	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<std::string, VariableType>> m_parameters);
+	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
 
 	void Accept(VisitorStmt& visitor) override;
 
@@ -102,7 +102,7 @@ public:
 	std::vector<std::unique_ptr<Stmt>> decl_stmts;
 	Token id_token;
 	VariableType return_type;
-	std::vector<std::pair<std::string, VariableType>> parameters;
+	std::vector<std::pair<Token, VariableType>> parameters;
 };
 
 class AssignmentStmt : public Stmt

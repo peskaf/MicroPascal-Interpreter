@@ -36,16 +36,16 @@ private:
 
 class Callable {
 public:
-	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<std::string, VariableType>> m_parameters, std::optional<VariableType> m_return_type);
+	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type);
 	
-	void PassArguments(std::vector<Literal>);
+	void PassArguments(std::vector<Literal> arguments, Token& callee);
 
 	std::shared_ptr<Environment> local_env;
 	std::shared_ptr<Stmt> body;
 	std::optional<VariableType> return_type;
 
 private:
-	std::vector<std::pair<std::string, VariableType>> parameters;
+	std::vector<std::pair<Token, VariableType>> parameters;
 };
 
 
