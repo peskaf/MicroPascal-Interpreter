@@ -52,7 +52,8 @@ private:
 
 	std::string LitToString(Literal& lit);
 
-	Environment env;
+	std::shared_ptr<Environment> global_env;
+	std::shared_ptr<Environment> current_env;
 };
 
 #endif // !INTERPRETER_HPP

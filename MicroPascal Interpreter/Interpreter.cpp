@@ -3,7 +3,7 @@
 #include "Interpreter.hpp"
 #include "Error.hpp"
 
-Interpreter::Interpreter() : env(Environment()) {};
+Interpreter::Interpreter() : global_env(std::make_shared<Environment>()), current_env(global_env) {};
 
 Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
@@ -97,7 +97,7 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 
 Literal Interpreter::Visit(VariableExpr& varExpr)
 {
-	return env.Get(varExpr.token);
+	return current_env->Get(varExpr.token);
 }
 
 void Interpreter::Visit(WritelnStmt& writelnStmt)
@@ -125,7 +125,7 @@ void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
 	{
 		for (auto&& tok : tok_vec)
 		{
-			env.Define(tok, type);
+			current_env->Define(tok, type);
 		}
 	}
 }
@@ -155,7 +155,7 @@ void Interpreter::Visit(CompoundStmt& compoundStmt)
 
 void Interpreter::Visit(AssignmentStmt& assignmentStmt)
 {
-	env.Assign(assignmentStmt.token, assignmentStmt.value->Accept(*this));
+	current_env->Assign(assignmentStmt.token, assignmentStmt.value->Accept(*this));
 }
 
 void Interpreter::Visit(IfStmt& ifStmt)
@@ -199,25 +199,25 @@ void Interpreter::Visit(ForStmt& forStmt)
 
 	forStmt.assignment->Accept(*this); // assign init value of iterator variable
 
-	Literal initial_value = env.Get(forStmt.id_token);
+	Literal initial_value = current_env->Get(forStmt.id_token);
 
 	if (IsInt(expression_value) && IsInt(initial_value))
 	{
 		if (forStmt.increment)
 		{
-			while (std::get<int>(env.Get(forStmt.id_token)) <= std::get<int>(expression_value))
+			while (std::get<int>(current_env->Get(forStmt.id_token)) <= std::get<int>(expression_value))
 			{
 				forStmt.body->Accept(*this);
-				env.Assign(forStmt.id_token, std::get<int>(env.Get(forStmt.id_token)) + 1);
+				current_env->Assign(forStmt.id_token, std::get<int>(current_env->Get(forStmt.id_token)) + 1);
 			}
 			return;
 		}
 		else // decrement
 		{
-			while (std::get<int>(env.Get(forStmt.id_token)) >= std::get<int>(expression_value))
+			while (std::get<int>(current_env->Get(forStmt.id_token)) >= std::get<int>(expression_value))
 			{
 				forStmt.body->Accept(*this);
-				env.Assign(forStmt.id_token, std::get<int>(env.Get(forStmt.id_token)) - 1);
+				current_env->Assign(forStmt.id_token, std::get<int>(current_env->Get(forStmt.id_token)) - 1);
 			}
 			return;
 		}
