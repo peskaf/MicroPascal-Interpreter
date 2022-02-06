@@ -18,8 +18,8 @@ int main(int argc, char const* argv[])
 		Lexer lex(input);
 		
 		std::vector<Token> tokens = lex.GetTokens();
-		std::cout << "here" << std::endl;
-		/**/
+
+		/*/
 		for (auto&& tok : tokens)
 		{
 			tok.Print();
@@ -34,7 +34,7 @@ int main(int argc, char const* argv[])
 		o code review a dokumentace
 		o cmake
 		*/
-		std::cout << "here" << std::endl;
+
 		Parser par(tokens);
 		Interpreter interpreter;
 

@@ -3,7 +3,7 @@
 
 Environment::Environment() : enclosing_env(nullptr) {};
 
-Environment::Environment(std::unique_ptr<Environment> m_enclosing_env) : enclosing_env(std::move(m_enclosing_env)) {}
+Environment::Environment(std::shared_ptr<Environment> m_enclosing_env) : enclosing_env(std::move(m_enclosing_env)) {}
 
 void Environment::Define(Token name, VariableType type)
 {

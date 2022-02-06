@@ -12,7 +12,7 @@ class Environment
 {
 public:
 	Environment();
-	Environment(std::unique_ptr<Environment> m_enclosing_env);
+	Environment(std::shared_ptr<Environment> m_enclosing_env);
 
 	void Define(Token name, VariableType type);
 	Literal Get(Token name);
@@ -20,7 +20,7 @@ public:
 
 private:
 	std::map<std::string, Literal> values;
-	std::unique_ptr<Environment> enclosing_env;
+	std::shared_ptr<Environment> enclosing_env;
 };
 
 
