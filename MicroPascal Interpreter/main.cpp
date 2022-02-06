@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "Lexer.hpp"
 #include "Parser.hpp"
@@ -8,30 +10,19 @@ int main(int argc, char const* argv[])
 {
 	try
 	{
-		std::string input =
-			"program test; \n"
-			"procedure q(a : integer);\n"
-			"var i:integer;\n"
-			"begin\n"
-			"for i:=1 to a do\n"
-			"begin\n"
-			"p(1);\n"
-			"writeln('b');\n"
-			"end;\n"
-			"end;\n"
-			"procedure p(a : integer);\n"
-			"var i:integer;\n"
-			"begin\n"
-			"for i:=1 to a do\n"
-			"begin\n"
-			"q(1);\n"
-			"writeln('a');\n"
-			"end;\n"
-			"end;\n"
-			"begin\n"
-			"p(5);\n"
-			"q(10);\n"
-			"end.\n";
+		std::string input;
+
+		if (argc == 2) // file
+		{
+			std::stringstream ss;
+			// check file errors
+			std::ifstream file(argv[1]);
+			std::string temp;
+			while (std::getline(file, temp)) {
+				ss << temp << '\n';
+			}
+			input = ss.str();
+		}
 
 		Lexer lex(input);
 		
@@ -46,7 +37,6 @@ int main(int argc, char const* argv[])
 
 		/*
 		TODO:	
-		o nacteni ze souboru
 		o warningy pryc
 		o code review a dokumentace
 		o cmake
@@ -56,10 +46,6 @@ int main(int argc, char const* argv[])
 		Interpreter interpreter;
 
 		interpreter.Interpret(par.Parse());
-
-		/*
-		
-		*/
 	}
 	catch (const std::exception& e)
 	{
