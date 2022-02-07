@@ -2,6 +2,6 @@
 # Tento soubor .gitignore byl automaticky vytvořen aplikací Microsoft(R) Visual Studio.
 ################################################################################
 
-/MicroPascal/.vs/MicroPascal/v16
+/MicroPascal/.vs/
 /MicroPascal/Debug
 /MicroPascal/Release
