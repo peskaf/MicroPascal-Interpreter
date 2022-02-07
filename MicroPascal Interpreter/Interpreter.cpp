@@ -23,7 +23,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		case TokenType::DIV:
 			if (std::get<int>(right_value) == 0)
 			{
-				Error::ThrowError(binExpr.op.line_num,"division by zero.");
+				throw Error::Error(binExpr.op.line_num,"division by zero.");
 			}
 			return std::get<int>(left_value) / std::get<int>(right_value);
 		case TokenType::GREATER_EQUAL:
@@ -57,7 +57,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		}
 	}
 
-	Error::ThrowError(binExpr.op.line_num, "types incompatible with given operator.");
+	throw Error::Error(binExpr.op.line_num, "types incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(LiteralExpr& litExpr)
@@ -87,7 +87,7 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 		return !std::get<bool>(right_value);
 	}
 	
-	Error::ThrowError(unExpr.op.line_num, "type incompatible with given operator.");
+	throw Error::Error(unExpr.op.line_num, "type incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(GroupingExpr& grExpr)
@@ -302,7 +302,7 @@ void Interpreter::Visit(IfStmt& ifStmt)
 		}
 		return; 
 	}
-	Error::ThrowError(ifStmt.token.line_num, "expected boolean value.");
+	throw Error::Error(ifStmt.token.line_num, "expected boolean value.");
 }
 
 void Interpreter::Visit(WhileStmt& whileStmt)
@@ -317,7 +317,7 @@ void Interpreter::Visit(WhileStmt& whileStmt)
 		}
 		return;
 	}
-	Error::ThrowError(whileStmt.token.line_num, "expected boolean value.");
+	throw Error::Error(whileStmt.token.line_num, "expected boolean value.");
 }
 
 void Interpreter::Visit(ForStmt& forStmt)
@@ -350,7 +350,7 @@ void Interpreter::Visit(ForStmt& forStmt)
 			return;
 		}
 	}
-	Error::ThrowError(forStmt.for_token.line_num, "expected integer value.");
+	throw Error::Error(forStmt.for_token.line_num, "expected integer value.");
 }
 
 void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
@@ -390,13 +390,13 @@ std::string Interpreter::LitToString(Literal& lit)
 	}
 
 	// should be unreachable -> will delete nullptr in literal variant
-	Error::ThrowError(0, "invalid literal value."); // TODO: jeste poresit
+	throw Error::Error(0, "invalid literal value."); // TODO: jeste poresit
 }
 
 void Interpreter::CheckStackOverflow()
 {
 	if (stack_count > max_stack_count)
 	{
-		Error::ThrowError(0, "stack overflow.");
+		throw Error::Error(0, "stack overflow.");
 	}
 }

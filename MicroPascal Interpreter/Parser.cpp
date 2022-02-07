@@ -26,7 +26,7 @@ std::unique_ptr<Stmt> Parser::Program()
 
     if (!IsAtEnd()) // to avoid some "code" after '.'
     {
-        Error::ThrowError(GetCurrTok().line_num, "EOF expected.");
+        throw Error::Error(GetCurrTok().line_num, "EOF expected.");
     }
     return std::make_unique<ProgramStmt>(id, std::move(comp_stmt), std::move(decl_stmts));
 }
@@ -86,7 +86,7 @@ std::unique_ptr<Stmt> Parser::ForStatement()
     Token for_tok = Eat(TokenType::FOR, "'for' expected.");
     if (GetCurrTok().type != TokenType::ID)
     {
-        Error::ThrowError(GetCurrTok().line_num, "identifier expected.");
+        throw Error::Error(GetCurrTok().line_num, "identifier expected.");
     }
 
     Token id_tok = GetCurrTok();
@@ -103,7 +103,8 @@ std::unique_ptr<Stmt> Parser::ForStatement()
     }
     else
     {
-        Error::ThrowError(GetCurrTok().line_num, "'to' or 'downto' expected.");
+
+        throw Error::Error(GetCurrTok().line_num, "'to' or 'downto' expected.");
     }
     Advance();
 
@@ -159,7 +160,7 @@ std::shared_ptr<Stmt> Parser::Declaration()
     case TokenType::PROCEDURE:
         return ProcDecl();
     default:
-        Error::ThrowError(GetCurrTok().line_num, "declaration expected.");
+        throw Error::Error(GetCurrTok().line_num, "declaration expected.");
     }
 }
 
@@ -183,7 +184,7 @@ std::shared_ptr<Stmt> Parser::VarDecl()
 
     if (GetCurrTok().type != TokenType::ID)
     {
-        Error::ThrowError(GetCurrTok().line_num, "identifier expected.");
+        throw Error::Error(GetCurrTok().line_num, "identifier expected.");
     }
 
     while (GetCurrTok().type == TokenType::ID)
@@ -203,7 +204,7 @@ std::shared_ptr<Stmt> Parser::VarDecl()
             type = VariableType::STRING;
             break;
         default:
-            Error::ThrowError(GetCurrTok().line_num, "invalid variable type.");
+            throw Error::Error(GetCurrTok().line_num, "invalid variable type.");
         }
         Advance();
 
@@ -248,7 +249,7 @@ std::shared_ptr<Stmt> Parser::FuncDecl()
         return_type = VariableType::STRING;
         break;
     default:
-        Error::ThrowError(GetCurrTok().line_num, "type expected.");
+        throw Error::Error(GetCurrTok().line_num, "type expected.");
         break;
     }
     Advance();
@@ -359,7 +360,7 @@ std::vector<std::pair<Token, VariableType>> Parser::ParameterList()
             type = VariableType::STRING;
             break;
         default:
-            Error::ThrowError(GetCurrTok().line_num, "type expected.");
+            throw Error::Error(GetCurrTok().line_num, "type expected.");
             break;
         }
         Advance();
@@ -462,7 +463,7 @@ Token Parser::Eat(TokenType expected_type, std::string error_message)
         return GetPrevious();
     }
     
-    Error::ThrowError(GetCurrTok().line_num, error_message);
+    throw Error::Error(GetCurrTok().line_num, error_message);
 }
 
 // Expr -> SimpleExpr ((">=" | "<=" | "<>" | "=" | ">" | "<") SimpleExpr)?
@@ -584,7 +585,7 @@ std::unique_ptr<Expr> Parser::Factor()
         return std::make_unique<VariableExpr>(Eat(TokenType::ID, "identifier expected."));
     }
 
-    Error::ThrowError(GetCurrTok().line_num, "expression expected.");
+    throw Error::Error(GetCurrTok().line_num, "expression expected.");
 }
 
 Token Parser::Peek()

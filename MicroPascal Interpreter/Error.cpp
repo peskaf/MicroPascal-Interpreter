@@ -2,10 +2,14 @@
 #include <sstream>
 
 #include "Error.hpp"
+#include <iostream>
 
-void Error::ThrowError(int line, std::string message)
+Error::Error(int line, std::string message)
 {
-	std::stringstream ss;
-	ss << "[Line: " << line << "] " << "Error: " << message;
-	throw std::runtime_error(ss.str());
+	error_message = ("[Line: " + std::to_string(line) + "] " + "Error: " + message);
+}
+
+std::string Error::what() const noexcept
+{
+	return error_message;
 }

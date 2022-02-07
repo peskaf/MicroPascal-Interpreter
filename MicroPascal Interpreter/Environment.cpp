@@ -22,11 +22,10 @@ void Environment::Define(Token name, VariableType type)
 			values[name.lexeme] = std::string();
 			return;
 		default:
-			Error::ThrowError(name.line_num, "invalid type.");
-			break;
+			throw Error::Error(name.line_num, "invalid type.");
 		}
 	}
-	Error::ThrowError(name.line_num, "duplicate identifier.");
+	throw Error::Error(name.line_num, "duplicate identifier.");
 }
 
 void Environment::Define(Token name, Callable callable)
@@ -36,7 +35,7 @@ void Environment::Define(Token name, Callable callable)
 		values[name.lexeme] = std::make_shared<Callable>(callable);
 		return;
 	}
-	Error::ThrowError(name.line_num, "duplicate identifier.");
+	throw Error::Error(name.line_num, "duplicate identifier.");
 }
 
 std::variant<Literal, std::shared_ptr<Callable>> Environment::Get(Token name)
@@ -53,7 +52,7 @@ std::variant<Literal, std::shared_ptr<Callable>> Environment::Get(Token name)
 		return enclosing_env->Get(name);
 	}
 
-	Error::ThrowError(name.line_num, "identifier not found.");
+	throw Error::Error(name.line_num, "identifier not found.");
 }
 
 Literal Environment::GetLiteral(Token name)
@@ -72,7 +71,7 @@ Literal Environment::GetLiteral(Token name)
 		return enclosing_env->GetLiteral(name);
 	}
 
-	Error::ThrowError(name.line_num, "literal expected.");
+	throw Error::Error(name.line_num, "literal expected.");
 }
 
 std::shared_ptr<Callable> Environment::GetCallable(Token name)
@@ -90,7 +89,7 @@ std::shared_ptr<Callable> Environment::GetCallable(Token name)
 	{
 		return enclosing_env->GetCallable(name);
 	}
-	Error::ThrowError(name.line_num, "callable expected.");
+	throw Error::Error(name.line_num, "callable expected.");
 }
 
 void Environment::Assign(Token name, Literal value)
@@ -103,7 +102,7 @@ void Environment::Assign(Token name, Literal value)
 			values[name.lexeme] = value;
 			return;
 		}
-		Error::ThrowError(name.line_num, "incompatible types.");
+		throw Error::Error(name.line_num, "incompatible types.");
 	}
 
 	// try to assign in enclosing env
@@ -113,7 +112,7 @@ void Environment::Assign(Token name, Literal value)
 		return;
 	}
 
-	Error::ThrowError(name.line_num, "identifier not found.");
+	throw Error::Error(name.line_num, "identifier not found.");
 }
 
 Callable::Callable(std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_declarations, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
@@ -124,7 +123,7 @@ void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 	// arity check
 	if (arguments.size() != parameters.size()) // different number of args
 	{
-		Error::ThrowError(callee.line_num, "invalid number of arguments.");
+		throw Error::Error(callee.line_num, "invalid number of arguments.");
 		return;
 	}
 
@@ -135,7 +134,7 @@ void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 			arguments[i].index() == 2 && parameters[i].second != VariableType::BOOL ||
 			arguments[i].index() == 3 && parameters[i].second != VariableType::STRING) // types does not match
 		{
-			Error::ThrowError(callee.line_num, "incompatible type for argument.");
+			throw Error::Error(callee.line_num, "incompatible type for argument.");
 		}
 	}
 

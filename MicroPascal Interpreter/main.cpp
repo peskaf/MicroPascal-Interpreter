@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "Error.hpp"
 #include "Lexer.hpp"
 #include "Parser.hpp"
 #include "Interpreter.hpp"
@@ -30,8 +31,6 @@ int main(int argc, char const* argv[])
 
 		/*
 		TODO:
-		o declaration or call has environment?
-		o warningy pryc
 		o code review a dokumentace
 		o cmake
 		*/
@@ -41,7 +40,7 @@ int main(int argc, char const* argv[])
 
 		interpreter.Interpret(par.Parse());
 	}
-	catch (const std::exception& e)
+	catch (const Error& e)
 	{
 		std::cout << e.what() << std::endl;
 	}

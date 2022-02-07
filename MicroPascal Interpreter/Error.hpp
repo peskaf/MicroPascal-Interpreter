@@ -3,9 +3,12 @@
 
 #include <string>
 
-class Error
+class Error //: public std::exception
 {
 public:
-	static void ThrowError(int line, std::string message);
+	Error(int line, std::string message);
+	std::string what() const noexcept;
+private:
+	std::string error_message;
 };
 #endif // !ERROR:HPP

@@ -112,7 +112,7 @@ void Lexer::ScanToken()
         SkipComment();
         break;
     default:
-        Error::ThrowError(line_num, "illegal character.");
+        throw Error::Error(line_num, "illegal character.");
         break;
     }
 }
@@ -142,7 +142,7 @@ void Lexer::SkipComment()
 
     if (IsAtEnd() && braces_count != 0)
     {
-        Error::ThrowError(line_num, "unexpected EOF."); // comment is not terminated -> goes on until the EOF
+        throw Error::Error(line_num, "unexpected EOF."); // comment is not terminated -> goes on until the EOF
     }
 }
 
@@ -205,12 +205,12 @@ std::string Lexer::String()
         Advance();
         if (curr_char == '\n')
         {
-            Error::ThrowError(line_num, "string exceeds line.");
+            throw Error::Error(line_num, "string exceeds line.");
         }
     }
     if (IsAtEnd())
     {
-        Error::ThrowError(line_num, "string is not terminated.");
+        throw Error::Error(line_num, "string is not terminated.");
     }
     Advance(); // skip second '
     return input.substr(start_pos + 1, curr_pos - (start_pos + 1)); // cut ' chars
