@@ -23,6 +23,11 @@ int main(int argc, char const* argv[])
 		try
 		{
 			std::ifstream file(argv[1]);
+
+			if (file.fail()) {
+				throw std::exception();
+			}
+
 			std::string line;
 			while (std::getline(file, line)) {
 				ss << line << '\n';
