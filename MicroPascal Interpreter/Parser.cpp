@@ -18,7 +18,7 @@ std::unique_ptr<Stmt> Parser::Program()
     Eat(TokenType::SEMICOLON, "';' expected.");
 
     // declarations
-    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
+    std::vector<std::shared_ptr<Stmt>> decl_stmts = Declarations();
     
     // comp. stmt
     std::unique_ptr<Stmt> comp_stmt = CompoundStatement();
@@ -148,7 +148,7 @@ std::vector<std::unique_ptr<Stmt>> Parser::StatementList()
     return statement_list;
 }
 
-std::unique_ptr<Stmt> Parser::Declaration()
+std::shared_ptr<Stmt> Parser::Declaration()
 {
     switch(GetCurrTok().type)
     {
@@ -174,7 +174,7 @@ std::vector<Token> Parser::IdentifierList()
     return tokens;
 }
 
-std::unique_ptr<Stmt> Parser::VarDecl()
+std::shared_ptr<Stmt> Parser::VarDecl()
 {
     Eat(TokenType::VAR, "'var' expected.");
     std::unordered_map<VariableType, std::vector<Token>> variables;
@@ -217,10 +217,10 @@ std::unique_ptr<Stmt> Parser::VarDecl()
         }
         Eat(TokenType::SEMICOLON, "';' expected.");
     }
-    return std::make_unique<VarDeclStmt>(variables);
+    return std::make_shared<VarDeclStmt>(variables);
 }
 
-std::unique_ptr<Stmt> Parser::FuncDecl()
+std::shared_ptr<Stmt> Parser::FuncDecl()
 {
     Eat(TokenType::FUNCTION, "'function' expected.");
     Token id_token = Eat(TokenType::ID, "identifier expected.");
@@ -256,17 +256,17 @@ std::unique_ptr<Stmt> Parser::FuncDecl()
     Eat(TokenType::SEMICOLON, "';' expected.");
 
     // declarations
-    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
+    std::vector<std::shared_ptr<Stmt>> decl_stmts = Declarations();
 
     // body
     std::unique_ptr<Stmt> body = CompoundStatement();
 
     Eat(TokenType::SEMICOLON, "';' expected.");
 
-    return std::make_unique<FuncDeclStmt>(id_token, return_type, std::move(body), std::move(decl_stmts), std::move(parameter_list));
+    return std::make_shared<FuncDeclStmt>(id_token, return_type, std::move(body), std::move(decl_stmts), std::move(parameter_list));
 }
 
-std::unique_ptr<Stmt> Parser::ProcDecl()
+std::shared_ptr<Stmt> Parser::ProcDecl()
 {
     Eat(TokenType::PROCEDURE, "'procedure' expected.");
     Token id_token = Eat(TokenType::ID, "identifier expected.");
@@ -281,14 +281,14 @@ std::unique_ptr<Stmt> Parser::ProcDecl()
     Eat(TokenType::SEMICOLON, "';' expected.");
 
     // declarations
-    std::vector<std::unique_ptr<Stmt>> decl_stmts = Declarations();
+    std::vector<std::shared_ptr<Stmt>> decl_stmts = Declarations();
 
     // body
     std::unique_ptr<Stmt> body = CompoundStatement();
 
     Eat(TokenType::SEMICOLON, "';' expected.");
 
-    return std::make_unique<ProcDeclStmt>(id_token, std::move(body), std::move(decl_stmts), std::move(parameter_list));
+    return std::make_shared<ProcDeclStmt>(id_token, std::move(body), std::move(decl_stmts), std::move(parameter_list));
 }
 
 std::unique_ptr<Stmt> Parser::ProcStmt()
@@ -315,9 +315,9 @@ std::unique_ptr<Stmt> Parser::ProcStmt()
     return std::make_unique<ProcedureCallStmt>(std::move(exprs), id_token);
 }
 
-std::vector<std::unique_ptr<Stmt>> Parser::Declarations()
+std::vector<std::shared_ptr<Stmt>> Parser::Declarations()
 {
-    std::vector<std::unique_ptr<Stmt>> decl_stmts{};
+    std::vector<std::shared_ptr<Stmt>> decl_stmts{};
     while (GetCurrTok().type == TokenType::VAR || GetCurrTok().type == TokenType::PROCEDURE || GetCurrTok().type == TokenType::FUNCTION)
     {
         decl_stmts.push_back(Declaration());

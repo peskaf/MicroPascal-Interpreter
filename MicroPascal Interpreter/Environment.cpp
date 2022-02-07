@@ -59,19 +59,36 @@ std::variant<Literal, std::shared_ptr<Callable>> Environment::Get(Token name)
 Literal Environment::GetLiteral(Token name)
 {
 	auto&& value = Get(name);
-	if (value.index() == 0) // literal
+
+	// is literal
+	if (value.index() == 0) 
 	{
 		return std::get<Literal>(value);
 	}
+	
+	// ??
+	if (enclosing_env != nullptr)
+	{
+		return enclosing_env->GetLiteral(name);
+	}
+
 	Error::ThrowError(name.line_num, "literal expected.");
 }
 
 std::shared_ptr<Callable> Environment::GetCallable(Token name)
 {
 	auto&& value = Get(name);
-	if (value.index() == 1) // callable
+
+	// is callable
+	if (value.index() == 1) // TODO: make function IsCallable a IsLiteral !
 	{
 		return std::get<std::shared_ptr<Callable>>(value);
+	}
+
+	// allows recursive calls (func has literal as return variable -> it looks for callable in encl. env. to find itself)
+	if (enclosing_env != nullptr)
+	{
+		return enclosing_env->GetCallable(name);
 	}
 	Error::ThrowError(name.line_num, "callable expected.");
 }
@@ -99,8 +116,8 @@ void Environment::Assign(Token name, Literal value)
 	Error::ThrowError(name.line_num, "identifier not found.");
 }
 
-Callable::Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
-	: local_env(std::make_shared<Environment>(parent_env)), body(std::move(m_body)), parameters(m_parameters), return_type(m_return_type) {};
+Callable::Callable(std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_declarations, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type)
+	: body(std::move(m_body)), declarations(std::move(m_declarations)), parameters(m_parameters), return_type(m_return_type) {};
 
 void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 {
@@ -128,3 +145,4 @@ void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 		local_env->Assign(parameters[i].first, arguments[i]);
 	}
 }
+

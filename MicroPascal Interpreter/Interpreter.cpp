@@ -155,54 +155,61 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 		arguments.push_back(expr->Accept(*this));
 	}
 
-	// pass arguments to callable -> arity, type check and arguments assignment happens over there
+	// (get callable by id) interpret all declarations in function object
 	auto&& callable = current_env->GetCallable(funcCallExpr.id_token);
-	callable->PassArguments(arguments, funcCallExpr.id_token);
 
-	// move to local env for execution while remembering the previous one
-	auto prev_env = current_env;
-	current_env = callable->local_env;
+	// remember current env
+	std::shared_ptr<Environment> prev_env = current_env;
+
+	std::shared_ptr<Environment> local_env = std::make_shared<Environment>(current_env);
+	callable->local_env = local_env; // pass local env to callable
+	current_env = local_env;
+
+	for (auto&& declStmt : callable->declarations)
+	{
+		declStmt->Accept(*this);
+	}
+
+	// define parameters variables in local env
+	for (auto&& [var, type] : callable->parameters)
+	{
+		current_env->Define(var, type);
+	}
+
+	// define variable that will serve as return (value in it will be returned), id same as func id
+	current_env->Define(funcCallExpr.id_token, callable->return_type.value());
+
+	// pass arguments to callable -> arity, type check and arguments assignment happens over there
+	callable->PassArguments(arguments, funcCallExpr.id_token);
 
 	// body execution
 	callable->body->Accept(*this);
+
+
+	// return value -> need to get it before exiting enviornment
+	Literal return_value = current_env->GetLiteral(funcCallExpr.id_token);
 
 	// go back to previous environment (caller's one)
 	current_env = prev_env;
 
 	// return 
 	stack_count--;
-	return callable->local_env->GetLiteral(funcCallExpr.id_token);
+	return return_value;
 }
 
 void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
 {
-	// first interpret all declarations
-	std::shared_ptr<Environment> local_env = std::make_shared<Environment>(current_env);
-	current_env = local_env;
+	// TODO: body unique ptr??
+	// make callable 
+	auto&& callable = Callable(std::move(funcDeclStmt.body), std::move(funcDeclStmt.decl_stmts), funcDeclStmt.parameters, funcDeclStmt.return_type);
 
-	for (auto&& declStmt : funcDeclStmt.decl_stmts)
-	{
-		declStmt->Accept(*this);
-	}
-	// define parameters variables in local env
-	for (auto&& [var, type] : funcDeclStmt.parameters)
-	{
-		current_env->Define(var, type);
-	}
-
-	// define variable that will serve as return (value in it will be returned), id same as func id
-	current_env->Define(funcDeclStmt.id_token, funcDeclStmt.return_type);
-
-	// make callable
-	auto&& callable = Callable(local_env, std::move(funcDeclStmt.body), funcDeclStmt.parameters, funcDeclStmt.return_type);
-
-	current_env = local_env->enclosing_env;
-	// define func by id in currend env
-	current_env->Define(funcDeclStmt.id_token, callable);
+	// define func by id in current env
+	current_env->Define(funcDeclStmt.id_token, std::move(callable));
 }
 
 void Interpreter::Visit(ProcDeclStmt& procDeclStmt)
 {
+	/*
 	// first interpret all declarations
 	std::shared_ptr<Environment> local_env = std::make_shared<Environment>(current_env);
 	current_env = local_env;
@@ -224,12 +231,15 @@ void Interpreter::Visit(ProcDeclStmt& procDeclStmt)
 	// back to upper environment
 	current_env = local_env->enclosing_env;
 
-	// define procedure by id in currend env
+	// define procedure by id in current 
+	
 	current_env->Define(procDeclStmt.id_token, callable);
+	*/
 }
 
 void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 {
+	/*
 	stack_count++;
 	CheckStackOverflow();
 
@@ -255,6 +265,7 @@ void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 	// go back to previous environment (caller's one)
 	current_env = prev_env;
 	stack_count--;
+	*/
 }
 
 void Interpreter::Visit(ProgramStmt& programStmt)

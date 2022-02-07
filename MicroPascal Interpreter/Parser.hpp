@@ -52,17 +52,17 @@ private:
 
     std::vector<std::unique_ptr<Stmt>> StatementList();
 
-    std::unique_ptr<Stmt> Declaration();
+    std::shared_ptr<Stmt> Declaration();
 
-    std::unique_ptr<Stmt> VarDecl();
+    std::shared_ptr<Stmt> VarDecl();
 
-    std::unique_ptr<Stmt> FuncDecl();
+    std::shared_ptr<Stmt> FuncDecl();
 
-    std::unique_ptr<Stmt> ProcDecl();
+    std::shared_ptr<Stmt> ProcDecl();
 
     std::unique_ptr<Stmt> ProcStmt();
 
-    std::vector<std::unique_ptr<Stmt>> Declarations();
+    std::vector<std::shared_ptr<Stmt>> Declarations();
 
     std::vector<std::pair<Token, VariableType>> ParameterList();
 

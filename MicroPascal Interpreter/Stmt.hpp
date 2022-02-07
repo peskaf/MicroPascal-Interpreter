@@ -48,12 +48,12 @@ public:
 class ProgramStmt : public Stmt
 {
 public:
-	ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::vector<std::unique_ptr<Stmt>> m_decl_stmts);
+	ProgramStmt(std::string m_id, std::unique_ptr<Stmt> m_stmt, std::vector<std::shared_ptr<Stmt>> m_decl_stmts);
 
 	void Accept(VisitorStmt& visitor) override;
 
 	std::string id;
-	std::vector<std::unique_ptr<Stmt>> decl_stmts;
+	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	std::unique_ptr<Stmt> stmt;
 };
 
@@ -98,12 +98,12 @@ public:
 class FuncDeclStmt : public Stmt
 {
 public:
-	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
+	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
 
 	void Accept(VisitorStmt& visitor) override;
 
 	std::shared_ptr<Stmt> body;
-	std::vector<std::unique_ptr<Stmt>> decl_stmts;
+	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	Token id_token;
 	VariableType return_type;
 	std::vector<std::pair<Token, VariableType>> parameters;
@@ -113,12 +113,12 @@ public:
 class ProcDeclStmt : public Stmt
 {
 public:
-	ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::unique_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
+	ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
 
 	void Accept(VisitorStmt& visitor) override;
 
 	std::shared_ptr<Stmt> body;
-	std::vector<std::unique_ptr<Stmt>> decl_stmts;
+	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	Token id_token;
 	std::vector<std::pair<Token, VariableType>> parameters;
 };

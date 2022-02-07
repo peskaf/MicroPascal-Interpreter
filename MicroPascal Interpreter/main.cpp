@@ -28,15 +28,9 @@ int main(int argc, char const* argv[])
 		
 		std::vector<Token> tokens = lex.GetTokens();
 
-		/*/
-		for (auto&& tok : tokens)
-		{
-			tok.Print();
-		}
-		/**/
-
 		/*
-		TODO:	
+		TODO:
+		o declaration or call has environment?
 		o warningy pryc
 		o code review a dokumentace
 		o cmake

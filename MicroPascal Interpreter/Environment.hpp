@@ -18,7 +18,7 @@ class Environment
 public:
 	Environment();
 	Environment(std::shared_ptr<Environment> m_enclosing_env);
-
+	
 	void Define(Token name, VariableType type);
 	void Define(Token name, Callable callable);
 	std::variant<Literal, std::shared_ptr<Callable>> Get(Token name);
@@ -28,24 +28,22 @@ public:
 
 	std::shared_ptr<Environment> enclosing_env;
 
-	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values; // pak dat zpet do private!!
 private:
-	
+	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values;
 };
 
 
 class Callable {
 public:
-	Callable(std::shared_ptr<Environment> parent_env, std::shared_ptr<Stmt> m_body, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type);
+	Callable(std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_declarations, std::vector<std::pair<Token, VariableType>> m_parameters, std::optional<VariableType> m_return_type);
 	
 	void PassArguments(std::vector<Literal> arguments, Token& callee);
 
 	std::shared_ptr<Environment> local_env;
+	std::vector<std::shared_ptr<Stmt>> declarations;
+	std::vector<std::pair<Token, VariableType>> parameters;
 	std::shared_ptr<Stmt> body;
 	std::optional<VariableType> return_type;
-
-private:
-	std::vector<std::pair<Token, VariableType>> parameters;
 };
 
 
