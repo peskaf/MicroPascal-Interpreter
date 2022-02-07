@@ -1,18 +1,33 @@
-program fibonacci;
-
-function fib(n:integer): integer;
-begin
-    if (n <= 2) then
-        fib := 1
-    else
-        fib := fib(n-1) + fib(n-2);
-end;
+program exGlobal;
+var
+   a, b, c: integer;
+procedure display;
 
 var
-    i:integer;
+   a, b, c: integer;
 
 begin
-    for i := 1 to 16 do
-        writeln(fib(i), ', ');
-    writeln('...');
+   { local variables }
+   a := 10;
+   b := 20;
+   c := a + b;
+   
+   writeln('Winthin the procedure display');
+   writeln(' Displaying the global variables a, b, and c');
+   
+   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);
+   writeln('Displaying the local variables a, b, and c');
+   
+   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);
+end;
+
+begin
+   a:= 100;
+   b:= 200;
+   c:= 300;
+   
+   writeln('Winthin the program exlocal');
+   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);   
+   
+   display();
 end.
