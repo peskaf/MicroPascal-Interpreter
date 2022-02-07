@@ -24,7 +24,7 @@
     <ProjectGuid>{4cb0f653-7b20-4559-8a1c-0e02030977ad}</ProjectGuid>
     <RootNamespace>MicroPascalInterpreter</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>src</ProjectName>
+    <ProjectName>MicroPascal</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
