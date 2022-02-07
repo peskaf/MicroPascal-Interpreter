@@ -30,7 +30,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		case TokenType::DIV:
 			if (std::get<int>(right_value) == 0)
 			{
-				throw Error::Error(binExpr.op.line_num,"division by zero.");
+				throw Error(binExpr.op.line_num,"division by zero.");
 			}
 			return std::get<int>(left_value) / std::get<int>(right_value);
 		case TokenType::GREATER_EQUAL:
@@ -66,7 +66,7 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		}
 	}
 
-	throw Error::Error(binExpr.op.line_num, "types incompatible with given operator.");
+	throw Error(binExpr.op.line_num, "types incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(LiteralExpr& litExpr)
@@ -98,7 +98,7 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 		return !std::get<bool>(right_value);
 	}
 	
-	throw Error::Error(unExpr.op.line_num, "type incompatible with given operator.");
+	throw Error(unExpr.op.line_num, "type incompatible with given operator.");
 }
 
 Literal Interpreter::Visit(GroupingExpr& grExpr)
@@ -317,7 +317,7 @@ void Interpreter::Visit(IfStmt& ifStmt)
 		}
 		return; 
 	}
-	throw Error::Error(ifStmt.token.line_num, "expected boolean value.");
+	throw Error(ifStmt.token.line_num, "expected boolean value.");
 }
 
 void Interpreter::Visit(WhileStmt& whileStmt)
@@ -332,7 +332,7 @@ void Interpreter::Visit(WhileStmt& whileStmt)
 		}
 		return;
 	}
-	throw Error::Error(whileStmt.token.line_num, "expected boolean value.");
+	throw Error(whileStmt.token.line_num, "expected boolean value.");
 }
 
 void Interpreter::Visit(ForStmt& forStmt)
@@ -366,7 +366,7 @@ void Interpreter::Visit(ForStmt& forStmt)
 			return;
 		}
 	}
-	throw Error::Error(forStmt.for_token.line_num, "expected integer value.");
+	throw Error(forStmt.for_token.line_num, "expected integer value.");
 }
 
 
@@ -403,7 +403,7 @@ std::string Interpreter::LitToString(Literal& lit)
 		return std::get<std::string>(lit);
 	}
 
-	throw Error::Error(0, "invalid literal value.");
+	throw Error(0, "invalid literal value.");
 }
 
 
@@ -411,6 +411,6 @@ void Interpreter::CheckStackOverflow()
 {
 	if (stack_count > max_stack_count)
 	{
-		throw Error::Error(0, "stack overflow.");
+		throw Error(0, "stack overflow.");
 	}
 }

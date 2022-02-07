@@ -1,16 +1,33 @@
-program fibonacci;
-
-function fib(n:integer): integer;
-begin
-    if (n <= 2) then
-        fib := 1
-    else
-        fib := fib(n-1) + fib(n-2);
-end;
+program flow;
 
 var
-    i:integer;
+    i,b,a:integer;
+    l : string;
+    p : boolean;
 
 begin
-    writeln(fib(20));
+    p := true;
+    i := 50;
+    l := 'a';
+
+    { IF }
+    if p = true
+    then
+        writeln('p is true')
+    else
+        writeln('p is false');
+    
+    { WHILE }
+    while i > 45
+    do
+        begin
+            i := i - 1;
+            writeln(i); { note that this semicollon is optional }
+        end;
+
+    { FOR }
+    for b := 1 to 10
+    do
+        writeln(l + l)
+
 end.

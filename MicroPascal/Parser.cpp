@@ -28,7 +28,7 @@ std::unique_ptr<Stmt> Parser::Program()
 
     if (!IsAtEnd()) // to avoid some "code" after '.'
     {
-        throw Error::Error(GetCurrTok().line_num, "EOF expected.");
+        throw Error(GetCurrTok().line_num, "EOF expected.");
     }
     return std::make_unique<ProgramStmt>(id, std::move(comp_stmt), std::move(decl_stmts));
 }
@@ -57,7 +57,7 @@ std::shared_ptr<Stmt> Parser::Declaration()
     case TokenType::VAR:
         return VarDecl();
     default:
-        throw Error::Error(GetCurrTok().line_num, "declaration expected.");
+        throw Error(GetCurrTok().line_num, "declaration expected.");
     }
 }
 
@@ -117,7 +117,7 @@ std::shared_ptr<Stmt> Parser::FuncDecl()
         return_type = VariableType::STRING;
         break;
     default:
-        throw Error::Error(GetCurrTok().line_num, "type expected.");
+        throw Error(GetCurrTok().line_num, "type expected.");
     }
     Advance();
 
@@ -144,7 +144,7 @@ std::shared_ptr<Stmt> Parser::VarDecl()
     // no identifier found
     if (!CurrTokIs(TokenType::ID))
     {
-        throw Error::Error(GetCurrTok().line_num, "identifier expected.");
+        throw Error(GetCurrTok().line_num, "identifier expected.");
     }
 
     VariableType type;
@@ -166,7 +166,7 @@ std::shared_ptr<Stmt> Parser::VarDecl()
             type = VariableType::STRING;
             break;
         default:
-            throw Error::Error(GetCurrTok().line_num, "invalid variable type.");
+            throw Error(GetCurrTok().line_num, "invalid variable type.");
         }
         Advance();
 
@@ -291,9 +291,9 @@ std::unique_ptr<Stmt> Parser::IfStatement()
 std::unique_ptr<Stmt> Parser::ForStatement()
 {
     Token for_tok = Eat(TokenType::FOR, "'for' expected.");
-    if (CurrTokIs(TokenType::ID))
+    if (!CurrTokIs(TokenType::ID))
     {
-        throw Error::Error(GetCurrTok().line_num, "identifier expected.");
+        throw Error(GetCurrTok().line_num, "identifier expected.");
     }
 
     Token it_variable_tok = GetCurrTok(); // id of iterator variable
@@ -312,7 +312,7 @@ std::unique_ptr<Stmt> Parser::ForStatement()
     }
     else
     {
-        throw Error::Error(GetCurrTok().line_num, "'to' or 'downto' expected.");
+        throw Error(GetCurrTok().line_num, "'to' or 'downto' expected.");
     }
     Advance();
 
@@ -458,7 +458,7 @@ std::unique_ptr<Expr> Parser::Factor()
         return std::make_unique<VariableExpr>(Eat(TokenType::ID, "identifier expected."));
     }
 
-    throw Error::Error(GetCurrTok().line_num, "expression expected.");
+    throw Error(GetCurrTok().line_num, "expression expected.");
 }
 
 // functionExpr -> IDENTIFIER ("(" exprList ")")?;
@@ -524,7 +524,7 @@ std::vector<std::pair<Token, VariableType>> Parser::ParameterList()
             type = VariableType::STRING;
             break;
         default:
-            throw Error::Error(GetCurrTok().line_num, "type expected.");
+            throw Error(GetCurrTok().line_num, "type expected.");
         }
         Advance(); // skip type
 
@@ -649,7 +649,7 @@ Token Parser::Eat(TokenType expected_type, std::string error_message)
         return GetPrevTok();
     }
 
-    throw Error::Error(GetCurrTok().line_num, error_message);
+    throw Error(GetCurrTok().line_num, error_message);
 }
 
 // move to next token
