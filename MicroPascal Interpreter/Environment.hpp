@@ -18,13 +18,18 @@ class Environment
 public:
 	Environment();
 	Environment(std::shared_ptr<Environment> m_enclosing_env);
-	
+
+	static bool IsLiteral(std::variant<Literal, std::shared_ptr<Callable>> value);
+	static bool IsCallable(std::variant<Literal, std::shared_ptr<Callable>> value);
+
 	void Define(Token name, VariableType type);
 	void Define(Token name, Callable callable);
-	std::variant<Literal, std::shared_ptr<Callable>> Get(Token name);
-	Literal GetLiteral(Token name);
-	std::shared_ptr<Callable> GetCallable(Token name);
-	void Assign(Token name, Literal value);
+
+	std::variant<Literal, std::shared_ptr<Callable>>& Get(Token& name);
+	Literal& GetLiteral(Token& name);
+	std::shared_ptr<Callable>& GetCallable(Token& name);
+
+	void Assign(Token& name, Literal value);
 
 	std::shared_ptr<Environment> enclosing_env;
 

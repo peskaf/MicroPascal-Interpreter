@@ -2,7 +2,8 @@
 
 #include "Expr.hpp"
 
-BinaryExpr::BinaryExpr(std::unique_ptr<Expr> m_left, std::unique_ptr<Expr> m_right, Token& m_op) : left(std::move(m_left)), right(std::move(m_right)), op(m_op) {};
+BinaryExpr::BinaryExpr(std::unique_ptr<Expr> m_left, std::unique_ptr<Expr> m_right, Token& m_op)
+	: left(std::move(m_left)), right(std::move(m_right)), op(m_op) {};
 	
 Literal BinaryExpr::Accept(VisitorExpr& visitor)
 {
@@ -10,7 +11,8 @@ Literal BinaryExpr::Accept(VisitorExpr& visitor)
 };
 
 
-UnaryExpr::UnaryExpr(std::unique_ptr<Expr> m_right, Token& m_op) : right(std::move(m_right)), op(m_op) {};
+UnaryExpr::UnaryExpr(std::unique_ptr<Expr> m_right, Token& m_op)
+	: right(std::move(m_right)), op(m_op) {};
 
 Literal UnaryExpr::Accept(VisitorExpr& visitor)
 {
@@ -42,8 +44,8 @@ Literal VariableExpr::Accept(VisitorExpr& visitor)
 }
 
 
-FunctionCallExpr::FunctionCallExpr(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token) :
-	exprs(std::move(m_exprs)), id_token(m_id_token) {};
+FunctionCallExpr::FunctionCallExpr(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token)
+	: exprs(std::move(m_exprs)), id_token(m_id_token) {};
 
 Literal FunctionCallExpr::Accept(VisitorExpr& visitor)
 {

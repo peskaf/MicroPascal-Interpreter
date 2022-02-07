@@ -1,8 +1,4 @@
-#include <stdexcept>
-#include <sstream>
-
 #include "Error.hpp"
-#include <iostream>
 
 Error::Error(int line, std::string message)
 {

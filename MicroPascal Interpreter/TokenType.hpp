@@ -30,7 +30,7 @@ enum class TokenType
 	STRING_VAL,
 	INTEGER_VAL,
 
-	// keywords
+	// reserved keywords
 	PROGRAM,
 	BEGIN,
 	END,

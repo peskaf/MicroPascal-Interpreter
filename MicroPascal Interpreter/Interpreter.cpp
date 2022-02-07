@@ -5,11 +5,18 @@
 
 Interpreter::Interpreter() : global_env(std::make_shared<Environment>()), current_env(global_env) {};
 
+void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
+{
+	stmt->Accept(*this);
+}
+
+
 Literal Interpreter::Visit(BinaryExpr& binExpr)
 {
 	Literal left_value = binExpr.left->Accept(*this);
 	Literal right_value = binExpr.right->Accept(*this);
 
+	// operations on integers
 	if (IsInt(left_value) && IsInt(right_value))
 	{
 		switch (binExpr.op.type)
@@ -39,12 +46,14 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		}
 	}
 
-	if (IsString(left_value) && IsString(right_value) && binExpr.op.type == TokenType::PLUS) // string concat on + op
+	// string concat on + op
+	if (IsString(left_value) && IsString(right_value) && binExpr.op.type == TokenType::PLUS) 
 	{
 		return std::get<std::string>(left_value) + std::get<std::string>(right_value);
 	}
 
-	if (left_value.index() == right_value.index()) // comparison only for same types
+	// (in)equality operators
+	if (left_value.index() == right_value.index()) // (in)equality only for same types
 	{
 		switch (binExpr.op.type)
 		{
@@ -69,6 +78,7 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 {
 	Literal right_value = unExpr.right->Accept(*this);
 
+	// + and - only on integers
 	if (IsInt(right_value))
 	{
 		switch (unExpr.op.type)
@@ -82,6 +92,7 @@ Literal Interpreter::Visit(UnaryExpr& unExpr)
 		}
 	}
 
+	// NOT only on booleans
 	if (IsBool(right_value) && unExpr.op.type == TokenType::NOT)
 	{
 		return !std::get<bool>(right_value);
@@ -98,7 +109,7 @@ Literal Interpreter::Visit(GroupingExpr& grExpr)
 Literal Interpreter::Visit(VariableExpr& varExpr)
 {
 	// function without parameters
-	if (current_env->Get(varExpr.token).index() == 1) 
+	if (Environment::IsCallable(current_env->Get(varExpr.token))) 
 	{
 		auto&& callable = current_env->GetCallable(varExpr.token);
 
@@ -114,32 +125,9 @@ Literal Interpreter::Visit(VariableExpr& varExpr)
 
 		return callable->local_env->GetLiteral(varExpr.token);
 	}
+
 	// literal
 	return current_env->GetLiteral(varExpr.token);
-}
-
-void Interpreter::Visit(WritelnStmt& writelnStmt)
-{
-	for (auto&& expr : writelnStmt.exprs) // evaluate all expressions inside writeln stmt
-	{
-		Literal to_print = expr->Accept(*this);
-		std::cout << LitToString(to_print);
-	}
-
-	std::cout << std::endl; // new line and flush
-}
-
-void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
-
-void Interpreter::Visit(VarDeclStmt& varDeclStmt) // define all variables
-{
-	for (auto&& [type, tok_vec] : varDeclStmt.variables)
-	{
-		for (auto&& tok : tok_vec)
-		{
-			current_env->Define(tok, type);
-		}
-	}
 }
 
 Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
@@ -155,7 +143,7 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 		arguments.push_back(expr->Accept(*this));
 	}
 
-	// (get callable by id) interpret all declarations in function object
+	// get callable by id
 	auto&& callable = current_env->GetCallable(funcCallExpr.id_token);
 
 	// remember current env
@@ -165,6 +153,7 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 	callable->local_env = local_env; // pass local env to callable
 	current_env = local_env;
 
+	// execute declarations
 	for (auto&& declStmt : callable->declarations)
 	{
 		declStmt->Accept(*this);
@@ -185,7 +174,6 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 	// body execution
 	callable->body->Accept(*this);
 
-
 	// return value -> need to get it before exiting enviornment
 	Literal return_value = current_env->GetLiteral(funcCallExpr.id_token);
 
@@ -195,6 +183,53 @@ Literal Interpreter::Visit(FunctionCallExpr& funcCallExpr)
 	// return 
 	stack_count--;
 	return return_value;
+}
+
+void Interpreter::Visit(ProgramStmt& programStmt)
+{
+	// first interpret all declarations
+	for (auto&& declStmt : programStmt.decl_stmts)
+	{
+		declStmt->Accept(*this);
+	}
+
+	// then compound statement
+	programStmt.stmt->Accept(*this);
+}
+
+void Interpreter::Visit(WritelnStmt& writelnStmt)
+{
+	// evaluate all expressions inside writeln stmt
+	for (auto&& expr : writelnStmt.exprs) 
+	{
+		Literal to_print = expr->Accept(*this);
+		std::cout << LitToString(to_print);
+	}
+
+	std::cout << std::endl; // new line and flush
+}
+
+void Interpreter::Visit(CompoundStmt& compoundStmt)
+{
+	// execute all statements in compound statement
+	for (auto&& stmt : compoundStmt.statements)
+	{
+		stmt->Accept(*this);
+	}
+}
+
+void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
+
+void Interpreter::Visit(VarDeclStmt& varDeclStmt)
+{
+	// define all variables
+	for (auto&& [type, identifiers] : varDeclStmt.variables)
+	{
+		for (auto&& identifier : identifiers)
+		{
+			current_env->Define(identifier, type);
+		}
+	}
 }
 
 void Interpreter::Visit(FuncDeclStmt& funcDeclStmt)
@@ -223,12 +258,12 @@ void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 	std::vector<Literal> arguments;
 
 	// evaluate all expressions to literals
-	for (auto&& expr : procCallStmt.exprs)
+	for (auto&& expr : procCallStmt.arguments)
 	{
 		arguments.push_back(expr->Accept(*this));
 	}
 
-	// (get callable by id) interpret all declarations in function object
+	// get callable by id
 	auto&& callable = current_env->GetCallable(procCallStmt.id_token);
 
 	// remember current env
@@ -238,6 +273,7 @@ void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 	callable->local_env = local_env; // pass local env to callable
 	current_env = local_env;
 
+	// interpret all declarations in procedure object
 	for (auto&& declStmt : callable->declarations)
 	{
 		declStmt->Accept(*this);
@@ -257,28 +293,7 @@ void Interpreter::Visit(ProcedureCallStmt& procCallStmt)
 
 	// go back to previous environment (caller's one)
 	current_env = prev_env;
-
 	stack_count--;
-}
-
-void Interpreter::Visit(ProgramStmt& programStmt)
-{
-	// first interpret all declarations
-	for (auto&& declStmt : programStmt.decl_stmts)
-	{
-		declStmt->Accept(*this);
-	}
-
-	// then compound statement
-	programStmt.stmt->Accept(*this); 
-}
-
-void Interpreter::Visit(CompoundStmt& compoundStmt)
-{
-	for (auto&& stmt : compoundStmt.statements)
-	{
-		stmt->Accept(*this);
-	}
 }
 
 void Interpreter::Visit(AssignmentStmt& assignmentStmt)
@@ -311,7 +326,7 @@ void Interpreter::Visit(WhileStmt& whileStmt)
 
 	if (IsBool(condition_value))
 	{
-		while (std::get<bool>(whileStmt.condition->Accept(*this))) // need to Accept visitor like this over and over because of environment change
+		while (std::get<bool>(whileStmt.condition->Accept(*this))) // note: need to Accept visitor like this because of environment change
 		{
 			whileStmt.body->Accept(*this);
 		}
@@ -322,13 +337,14 @@ void Interpreter::Visit(WhileStmt& whileStmt)
 
 void Interpreter::Visit(ForStmt& forStmt)
 {
-	// note: according to Free Pascal Compiler version 3.0.2, expression_value is evaluated BEFORE initial value is assigned
-	Literal expression_value = forStmt.expression->Accept(*this); // value that we count to/downto
+	// note: according to Free Pascal Compiler version 3.0.2, expression_value is evaluated before initial value is assigned
+	Literal expression_value = forStmt.expression->Accept(*this); // value that is to be counted to/downto
 
 	forStmt.assignment->Accept(*this); // assign init value of iterator variable
 
-	Literal initial_value = current_env->GetLiteral(forStmt.id_token);
+	Literal& initial_value = current_env->GetLiteral(forStmt.id_token);
 
+	// check types and desugar to while cycle
 	if (IsInt(expression_value) && IsInt(initial_value))
 	{
 		if (forStmt.increment)
@@ -353,12 +369,8 @@ void Interpreter::Visit(ForStmt& forStmt)
 	throw Error::Error(forStmt.for_token.line_num, "expected integer value.");
 }
 
-void Interpreter::Interpret(std::unique_ptr<Stmt> stmt)
-{
-	stmt->Accept(*this);
-}
 
-// 1 .. int, 2 .. bool, 3 .. string
+// 1 .. int, 2 .. bool, 3 .. string -> according to order of types in variant Literal in Token.hpp
 bool Interpreter::IsInt(Literal& lit)
 {
 	return lit.index() == 1;
@@ -374,7 +386,9 @@ bool Interpreter::IsString(Literal& lit)
 	return lit.index() == 3;
 }
 
-std::string Interpreter::LitToString(Literal& lit)
+
+// convert literal to string representation for writeln statement (C++ print 0 on false etc.)
+std::string Interpreter::LitToString(Literal& lit) 
 {
 	if (IsBool(lit))
 	{
@@ -389,9 +403,9 @@ std::string Interpreter::LitToString(Literal& lit)
 		return std::get<std::string>(lit);
 	}
 
-	// should be unreachable -> will delete nullptr in literal variant
-	throw Error::Error(0, "invalid literal value."); // TODO: jeste poresit
+	throw Error::Error(0, "invalid literal value.");
 }
+
 
 void Interpreter::CheckStackOverflow()
 {

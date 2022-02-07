@@ -16,30 +16,24 @@ public:
     std::vector<Token> GetTokens();
 
 private:
-    bool IsAtEnd();
-
     void ScanToken();
 
-    void SkipComment();
-    
-    bool NextIsMatchWith(char next);
-
-    int Integer();
-
-    void Identifier();
-
-    std::string String();
-
     void AddToken(TokenType type);
-
     void AddToken(TokenType type, Literal lit);
-
+    
+    int Integer();
+    void Identifier();
+    std::string String();
+    
     void Advance();
-
+    bool NextIsMatchWith(char next);
     void SkipWhitespace();
+    void SkipComment();
+    bool IsAtEnd();
 
     std::string input;
 
+    // such words will not be considered as identifiers
     const std::map<std::string, TokenType> reserved_keywords =
     {
         {"program", TokenType::PROGRAM},
@@ -71,7 +65,7 @@ private:
     std::vector<Token> tokens;
 
     int line_num = 1;
-    size_t start_pos = 0;
+    size_t start_pos = 0; // starting position of current lexeme
     size_t curr_pos = 0;
     char curr_char = input[curr_pos];
 };

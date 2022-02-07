@@ -24,9 +24,9 @@ class ProcedureCallStmt;
 class VisitorStmt
 {
 public:
-	virtual void Visit(WritelnStmt& writelnStmt) = 0;
-	virtual void Visit(CompoundStmt& compundStmt) = 0;
 	virtual void Visit(ProgramStmt& programStmt) = 0;
+	virtual void Visit(CompoundStmt& compundStmt) = 0;
+	virtual void Visit(WritelnStmt& writelnStmt) = 0;
 	virtual void Visit(EmptyStmt& emptyStmt) = 0;
 	virtual void Visit(VarDeclStmt& varDeclStmt) = 0;
 	virtual void Visit(FuncDeclStmt& funcDeclStmt) = 0;
@@ -38,10 +38,12 @@ public:
 	virtual void Visit(ProcedureCallStmt& procedureCallStmt) = 0;
 };
 
+
 class Stmt
 {
 public:
-	// virtual ~Stmt();
+	virtual ~Stmt() {};
+
 	virtual void Accept(VisitorStmt& visitor) = 0;
 };
 
@@ -57,16 +59,6 @@ public:
 	std::unique_ptr<Stmt> stmt;
 };
 
-class WritelnStmt : public Stmt
-{
-public:
-	WritelnStmt(std::vector<std::unique_ptr<Expr>> m_exprs);
-
-	void Accept(VisitorStmt& visitor) override;
-
-	std::vector<std::unique_ptr<Expr>> exprs;
-};
-
 class CompoundStmt : public Stmt
 {
 public:
@@ -75,6 +67,16 @@ public:
 	void Accept(VisitorStmt& visitor) override;
 
 	std::vector<std::unique_ptr<Stmt>> statements;
+};
+
+class WritelnStmt : public Stmt
+{
+public:
+	WritelnStmt(std::vector<std::unique_ptr<Expr>> m_exprs);
+
+	void Accept(VisitorStmt& visitor) override;
+
+	std::vector<std::unique_ptr<Expr>> exprs;
 };
 
 class EmptyStmt : public Stmt
@@ -98,7 +100,8 @@ public:
 class FuncDeclStmt : public Stmt
 {
 public:
-	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
+	FuncDeclStmt(Token m_id_token, VariableType m_return_type, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts,
+		std::vector<std::pair<Token, VariableType>> m_parameters);
 
 	void Accept(VisitorStmt& visitor) override;
 
@@ -113,7 +116,8 @@ public:
 class ProcDeclStmt : public Stmt
 {
 public:
-	ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts, std::vector<std::pair<Token, VariableType>> m_parameters);
+	ProcDeclStmt(Token m_id_token, std::shared_ptr<Stmt> m_body, std::vector<std::shared_ptr<Stmt>> m_decl_stmts,
+		std::vector<std::pair<Token, VariableType>> m_parameters);
 
 	void Accept(VisitorStmt& visitor) override;
 
@@ -126,12 +130,12 @@ public:
 class ProcedureCallStmt : public Stmt
 {
 public:
-	ProcedureCallStmt(std::vector<std::unique_ptr<Expr>> m_exprs, Token m_id_token);
+	ProcedureCallStmt(std::vector<std::unique_ptr<Expr>> m_arguments, Token m_id_token);
 
 	void Accept(VisitorStmt& visitor) override;
 
 	Token id_token;
-	std::vector<std::unique_ptr<Expr>> exprs; // arguments
+	std::vector<std::unique_ptr<Expr>> arguments;
 };
 
 
@@ -186,6 +190,5 @@ public:
 	std::unique_ptr<Expr> expression;
 	std::unique_ptr<Stmt> body;
 };
-
 
 #endif // !STMT_HPP

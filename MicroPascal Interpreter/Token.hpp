@@ -21,13 +21,13 @@ public:
 	Token(TokenType m_type, std::string m_lexeme, Literal m_lit, int m_line_num)
 		: type(m_type), lexeme(m_lexeme), lit(m_lit), line_num(m_line_num) {}
 
-	void Print() // for current debug
+	void Print()
 	{
 		std::cout << type << " " << lexeme << " " << line_num << std::endl;
 	}
 
 	TokenType type;
-	std::string lexeme;
+	std::string lexeme; // what lexer read, identifiers converted to lower case
 	Literal lit;
 	int line_num; // for error handling
 };

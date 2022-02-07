@@ -6,7 +6,6 @@
 
 #include "Token.hpp"
 
-
 class BinaryExpr;
 class UnaryExpr;
 class LiteralExpr;
@@ -25,10 +24,12 @@ public:
 	virtual Literal Visit(FunctionCallExpr& funcCallExpr) = 0;
 };
 
+
 class Expr
 {
 public:
-	// virtual ~Expr();
+	virtual ~Expr() {};
+
 	virtual Literal Accept(VisitorExpr& visitor) = 0;
 };
 
@@ -65,7 +66,7 @@ public:
 	Literal value;
 };
 
-class GroupingExpr : public Expr // ( ... )
+class GroupingExpr : public Expr
 {
 public:
 	GroupingExpr(std::unique_ptr<Expr> m_expr);
