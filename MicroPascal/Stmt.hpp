@@ -55,8 +55,8 @@ public:
 	void Accept(VisitorStmt& visitor) override;
 
 	std::string id;
-	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	std::unique_ptr<Stmt> stmt;
+	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 };
 
 class CompoundStmt : public Stmt

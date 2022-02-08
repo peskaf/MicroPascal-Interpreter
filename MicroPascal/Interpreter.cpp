@@ -218,7 +218,7 @@ void Interpreter::Visit(CompoundStmt& compoundStmt)
 	}
 }
 
-void Interpreter::Visit(EmptyStmt& emptyStmt) {} // do nothing
+void Interpreter::Visit([[maybe_unused]] EmptyStmt& emptyStmt) {} // do nothing
 
 void Interpreter::Visit(VarDeclStmt& varDeclStmt)
 {
