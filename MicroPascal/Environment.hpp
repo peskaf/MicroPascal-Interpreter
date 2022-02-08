@@ -1,9 +1,8 @@
 ﻿#ifndef ENVIRONMENT_HPP
 #define ENVIRONMENT_HPP
 
-#include <map>
+#include <unordered_map>
 #include <string>
-#include <typeindex>
 #include <variant>
 #include <memory>
 #include <vector>
@@ -34,7 +33,7 @@ public:
 	std::shared_ptr<Environment> enclosing_env;
 
 private:
-	std::map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values;
+	std::unordered_map<std::string, std::variant<Literal, std::shared_ptr<Callable>>> values;
 };
 
 

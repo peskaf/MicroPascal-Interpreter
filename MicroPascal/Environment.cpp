@@ -141,9 +141,9 @@ void Callable::PassArguments(std::vector<Literal> arguments, Token& callee)
 	for (size_t i = 0; i < arguments.size(); i++)
 	{
 		// 1 .. int, 2 .. bool, 3 .. string
-		if ((arguments[i].index() == 1) && parameters[i].second != VariableType::INTEGER ||
-			(arguments[i].index() == 2) && parameters[i].second != VariableType::BOOL ||
-			(arguments[i].index() == 3) && parameters[i].second != VariableType::STRING) // types does not match
+		if (((arguments[i].index() == 1) && parameters[i].second != VariableType::INTEGER) ||
+			((arguments[i].index() == 2) && parameters[i].second != VariableType::BOOL) ||
+			((arguments[i].index() == 3) && parameters[i].second != VariableType::STRING)) // types does not match
 		{
 			throw Error(callee.line_num, "incompatible type for argument.");
 		}

@@ -2,7 +2,7 @@
 #define LEXER_HPP
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "TokenType.hpp"
@@ -34,7 +34,7 @@ private:
     std::string input;
 
     // such words will not be considered as identifiers
-    const std::map<std::string, TokenType> reserved_keywords =
+    const std::unordered_map<std::string, TokenType> reserved_keywords =
     {
         {"program", TokenType::PROGRAM},
         {"begin", TokenType::BEGIN},
