@@ -563,7 +563,7 @@ std::vector<std::unique_ptr<Stmt>> Parser::StatementList()
         Advance(); // skip the semi
         statement_list.push_back(Statement());
     }
-    return std::move(statement_list);
+    return statement_list;
 }
 
 // exprList -> expression ("," expression)*;

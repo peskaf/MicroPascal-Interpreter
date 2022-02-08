@@ -43,11 +43,13 @@ public:
 	
 	void PassArguments(std::vector<Literal> arguments, Token& callee);
 
-	std::shared_ptr<Environment> local_env;
+	std::shared_ptr<Stmt> body;
 	std::vector<std::shared_ptr<Stmt>> declarations;
 	std::vector<std::pair<Token, VariableType>> parameters;
-	std::shared_ptr<Stmt> body;
+
 	std::optional<VariableType> return_type;
+
+	std::shared_ptr<Environment> local_env = nullptr; // gets assigned on call
 };
 
 

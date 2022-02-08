@@ -93,9 +93,8 @@ public:
 
 	Literal Accept(VisitorExpr& visitor) override;
 
-	Token id_token;
 	std::vector<std::unique_ptr<Expr>> exprs;
-
+	Token id_token;
 };
 
 #endif // !EXPR_HPP

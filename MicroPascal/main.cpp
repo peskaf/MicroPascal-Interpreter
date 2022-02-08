@@ -13,12 +13,12 @@ int main(int argc, char const* argv[])
 	std::stringstream ss;
 
 	// read input
-	if (argc > 2)
+	if (argc != 2) // wrong usage
 	{
-		std::cout << "Usage: mpas [script]" << std::endl;
+		std::cout << "Usage: provide a name of the file that is to be interpreted as an argument." << std::endl;
 		return 1;
 	}
-	else if (argc == 2) // from file
+	else // read file
 	{
 		try
 		{
@@ -37,16 +37,6 @@ int main(int argc, char const* argv[])
 		{
 			std::cerr << "Error: file error." << std::endl;
 			return 1;
-		}
-	}
-	else // from stdin
-	{
-		int line_count = 1;
-		std::cout << line_count++ << "> ";
-		for (std::string line; std::getline(std::cin, line);)
-		{
-			ss << line << '\n';
-			std::cout << line_count++ << "> ";
 		}
 	}
 

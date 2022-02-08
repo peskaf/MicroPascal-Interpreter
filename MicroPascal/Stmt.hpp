@@ -105,10 +105,10 @@ public:
 
 	void Accept(VisitorStmt& visitor) override;
 
-	std::shared_ptr<Stmt> body;
-	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	Token id_token;
 	VariableType return_type;
+	std::shared_ptr<Stmt> body;
+	std::vector<std::shared_ptr<Stmt>> decl_stmts;
 	std::vector<std::pair<Token, VariableType>> parameters;
 };
 
@@ -121,9 +121,9 @@ public:
 
 	void Accept(VisitorStmt& visitor) override;
 
+	Token id_token;
 	std::shared_ptr<Stmt> body;
 	std::vector<std::shared_ptr<Stmt>> decl_stmts;
-	Token id_token;
 	std::vector<std::pair<Token, VariableType>> parameters;
 };
 
@@ -134,8 +134,8 @@ public:
 
 	void Accept(VisitorStmt& visitor) override;
 
-	Token id_token;
 	std::vector<std::unique_ptr<Expr>> arguments;
+	Token id_token;
 };
 
 

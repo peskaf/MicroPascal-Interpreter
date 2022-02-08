@@ -26,7 +26,7 @@ private:
 	void Visit(ProgramStmt& programStmt) override;
 	void Visit(WritelnStmt& writelnStmt) override;
 	void Visit(CompoundStmt& compoundStmt) override;
-	void Visit(EmptyStmt& emptyStmt) override;
+	void Visit([[maybe_unused]] EmptyStmt& emptyStmt) override;
 	void Visit(VarDeclStmt& varDeclStmt) override;
 	void Visit(FuncDeclStmt& funcDeclStmt) override;
 	void Visit(ProcDeclStmt& procDeclStmt) override;
