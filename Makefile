@@ -3,7 +3,7 @@ CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -O3 -flto -DNDEBUG
 
 SOURCE_DIR := MicroPascal
 OUTPUT_DIR := build
-EXECUTABLE := $(OUTPUT_DIR)/mpas
+EXECUTABLE := $(OUTPUT_DIR)/MicroPascal
 
 HEADERS := $(wildcard $(SOURCE_DIR)/*.hpp)
 SOURCES := $(wildcard $(SOURCE_DIR)/*.cpp)
