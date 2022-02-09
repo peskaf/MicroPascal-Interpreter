@@ -22,7 +22,7 @@ Podmnožina jazyka Pascal, pro kterou je interpreter napsán, je vymazena takto:
 Předpokládá se použití z konzole (z adresáře se spustitelným souborem), na Windowsu jako příkaz `MicroPascal.exe file_name`, na Linuxu `./MicroPascal file_name`.
 
 ### Vstupní data
-Vstupem programu je jméno souboru, který se bude interpretovat. Obsahem souboru by měl být textový zápis programu v programovacím jazyce Pascal, který je vymezen omezen na proměnné typů integer, string a boolean, for cyklus, while cyklus, if-then-else, writeln, procedury, funkce a základní binární a unární operátory (ne bitové operace a modulo). Komentáře k programu musí být obsaženy ve složených závorkách (`{ comment }`). Celková struktura očekávaného kódu je k nahlédnutí sekci Gramatika.
+Vstupem programu je jméno souboru, který se bude interpretovat. Obsahem souboru by měl být textový zápis programu v programovacím jazyce Pascal, který je omezen na proměnné typů integer, string a boolean, for cyklus, while cyklus, if-then-else, writeln, procedury, funkce a základní binární a unární operátory (ne bitové operace a modulo). Komentáře k programu musí být obsaženy ve složených závorkách (`{ comment }`). Celková struktura očekávaného kódu je k nahlédnutí sekci Gramatika.
 
 Je-li program špatně zapsán nebo pokud se ve vstupním souboru objevují neočekávané znaky, program odpoví chybovou hláškou. Ohlášena je vždy první chyba (ať už při skenování, parsování nebo interpretaci), na kterou se narazí, program spolu s ohlášením skončí.
 
