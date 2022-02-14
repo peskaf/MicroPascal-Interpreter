@@ -26,7 +26,7 @@ Input of the program is a name of the file that is to be interpreted. The file i
 
 Note that only the first error encountered is being presented to the user in form of the error message.
 
-### Grammar
+## Grammar
 
 program -> "program" IDENTIFIER ";" declaration* compoundStmt "." EOF;
 
@@ -80,5 +80,5 @@ exprList -> expression ("," expression)*;
 
 type -> "integer" | "string" | "boolean";
 
-### Sources
+## Sources
 - Nystrom, R. (2021). Crafting Interpreters. Genever Benning.
