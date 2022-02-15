@@ -2,7 +2,7 @@
 
 ## Syntax
 
-MicroPascal is a subset of Pascal programming language limited to
+MicroPascal is a subset of the Pascal programming language limited to
 - variables of integer, boolean and string types,
 - procedures and functions,
 - while and for cycle,
