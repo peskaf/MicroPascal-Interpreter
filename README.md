@@ -80,5 +80,5 @@ exprList -> expression ("," expression)*;
 
 type -> "integer" | "string" | "boolean";
 
-## Sources
+## Resources
 - Nystrom, R. (2021). Crafting Interpreters. Genever Benning.
