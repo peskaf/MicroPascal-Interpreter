@@ -8,7 +8,7 @@ MicroPascal is a subset of the Pascal programming language limited to
 - while and for cycle,
 - if-then-else statement,
 - writeln statement,
-- binary operators +, -, *, *div*, <, <=, >, =>, <>, =, :=, *and*, *or*,
+- binary operators +, -, \*, *div*, <, <=, >, =>, <>, =, :=, *and*, *or*,
 - unary operators +, -, *not*.
 
 ## Build
@@ -60,22 +60,22 @@ emptyStmt -> ε;
 
 expression -> simpleExpr ((">=" | "<=" | "<>" | "=" | ">" | "<") simpleExpr)?;
 
-simpleExpr -> term (("+" | "-" | "or") term)*;
+simpleExpr -> term (("+" | "-" | "or") term)\*;
 
-term -> factor (("*" | "div" | "and") factor)*;
+term -> factor (("\*" | "div" | "and") factor)\*;
 
 factor -> ("+" | "-" | "not") factor | functionExpr | INTEGER | "(" expression ")" | "true" | "false" | STRING | IDENTIFIER;
 
 functionExpr -> IDENTIFIER ("(" exprList ")")?;
 
 
-parameterList -> "(" (identifierList ":" type (";" identifierList ":" type)*)? ")";
+parameterList -> "(" (identifierList ":" type (";" identifierList ":" type)\*)? ")";
 
-identifierList -> IDENTIFIER ("," IDENTIFIER)*;
+identifierList -> IDENTIFIER ("," IDENTIFIER)\*;
 
-statementList -> statement (";" statement)*;
+statementList -> statement (";" statement)\*;
 
-exprList -> expression ("," expression)*;
+exprList -> expression ("," expression)\*;
 
 
 type -> "integer" | "string" | "boolean";
