@@ -22,7 +22,7 @@ Executing from console is expected, on Windows using `MicroPascal.exe file_name`
 
 ### Input
 
-Input of the program is a name of the file that is to be interpreted. The file is expected to contain program written in MicroPascal language, error messages are generated otherwise. Note that comments can be written only as `{ comment }`, not `(* comment *)`. In case of syntax uncertainty, see the Grammar section. Examples of both valid and invalid input files are present in the [examples](./examples) directory.
+Input of the program is a name of the file that is to be interpreted. The file is expected to contain a program written in the MicroPascal language, error messages are generated otherwise. Note that comments can be written only as `{ comment }`, not `(* comment *)`. In case of syntax uncertainty, see the Grammar section. Examples of both valid and invalid input files are present in the [examples](./examples) directory.
 
 Note that only the first error encountered is being presented to the user in form of the error message.
 
