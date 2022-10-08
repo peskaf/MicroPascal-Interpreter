@@ -66,8 +66,8 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		}
 	}
 
-	//boolean operators and,or
-	if (IsBool(left_value) && IsBool(right_value)) // (in)equality only for same types
+	// boolean operators and, or
+	if (IsBool(left_value) && IsBool(right_value)) // compare only bools
 	{
 		switch (binExpr.op.type)
 		{
