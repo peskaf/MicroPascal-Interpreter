@@ -66,6 +66,20 @@ Literal Interpreter::Visit(BinaryExpr& binExpr)
 		}
 	}
 
+	//boolean operators and,or
+	if (IsBool(left_value) && IsBool(right_value)) // (in)equality only for same types
+	{
+		switch (binExpr.op.type)
+		{
+		case TokenType::AND:
+			return std::get<bool>(left_value) && std::get<bool>(right_value);
+		case TokenType::OR:
+			return std::get<bool>(left_value) || std::get<bool>(right_value);
+		default:
+			break;
+		}
+	}
+
 	throw Error(binExpr.op.line_num, "types incompatible with given operator.");
 }
 
