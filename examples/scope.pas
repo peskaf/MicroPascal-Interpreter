@@ -16,10 +16,10 @@ begin
    writeln('Winthin the procedure display');
    writeln(' Displaying the global variables a, b, and c');
    
-   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);
+   writeln('value of a = ', a , ', b = ',  b, ' and c = ', c);
    writeln('Displaying the local variables a, b, and c');
    
-   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);
+   writeln('value of a = ', a , ', b = ',  b, ' and c = ', c);
 end;
 
 begin
@@ -28,7 +28,7 @@ begin
    c:= 300;
    
    writeln('Winthin the program exlocal');
-   writeln('value of a = ', a , ' b =  ',  b, ' and c = ', c);   
+   writeln('value of a = ', a , ', b = ',  b, ' and c = ', c);   
    
    display();
 end.
